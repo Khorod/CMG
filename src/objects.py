@@ -1,5 +1,8 @@
 import pygame
 
+# Own imports
+import utils
+
 class GameObject(object):
     """Abstract superclass for all objects in the game."""
 
@@ -14,9 +17,9 @@ class GameObject(object):
 class Person(GameObject):
     """Class for one person."""
 
-    def __init__(self, pos):
+    def __init__(self, x, y):
         GameObject.__init__(self)
-        self.pos = pos
+        self.pos = utils.Point(x, y)
         self.goal = None
         
     def __repr__(self):
@@ -26,7 +29,7 @@ class Person(GameObject):
         return self.__repr__()
 
     def draw(self, surface):
-        pygame.draw.circle(surface, (255,0,0), self.pos, 20, 0)
+        pygame.draw.circle(surface, (255,0,0), self.pos.tuple(), 20, 0)
 
     def step(self):
         pass
@@ -34,8 +37,8 @@ class Person(GameObject):
 class Player(Person):
     """Player object."""
 
-    def __init__(self, pos):
-        Person.__init__(self, pos)
+    def __init__(self, x, y):
+        Person.__init__(self, x, y)
         
     def step(self):
         # Logic here!

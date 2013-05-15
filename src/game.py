@@ -2,6 +2,7 @@ import pygame
 
 # Own imports
 import objects
+import utils
 
 # Define some colors
 black    = ( 10,  10,  10)
@@ -27,14 +28,29 @@ clock = pygame.time.Clock()
 game_objects = []
 
 # Create a player
-player = objects.Player((50,50))
+player = objects.Player(50,50)
 game_objects.append(player)
 
 # Main Program Loop
 while done == False:
     for event in pygame.event.get(): # User did something
         if event.type == pygame.QUIT: # If user clicked close
-            done=True # Flag that we are done so we exit this loop
+            done = True # Flag that we are done so we exit this loop
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                done = True
+
+    # Handle player movement
+    pressed = pygame.key.get_pressed()
+
+    if pressed[pygame.K_a]:
+        player.pos -= (1,0)
+    if pressed[pygame.K_d]:
+        player.pos += (1,0)
+    if pressed[pygame.K_w]:
+        player.pos -= (0,1)
+    if pressed[pygame.K_s]:
+        player.pos += (0,1)
 
     # Perform the actions of each object
     for obj in game_objects:
