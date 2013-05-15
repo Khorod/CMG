@@ -1,0 +1,4 @@
+CMG
+===
+
+crowd manipulation game
