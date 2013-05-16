@@ -5,6 +5,7 @@ import utils
 
 class GameObject(object):
     """Abstract superclass for all objects in the game."""
+    world = None
 
     def draw(self, surface):
         """Draws the object to the given surface."""
@@ -29,7 +30,7 @@ class Person(GameObject):
         return self.__repr__()
 
     def draw(self, surface):
-        pygame.draw.circle(surface, (255,0,0), self.pos.tuple(), 20, 0)
+        pygame.draw.circle(surface, (255,0,0), self.pos.tuple(), 8, 0)
 
     def step(self):
         pass
