@@ -31,7 +31,13 @@ game_objects = []
 
 # Create a player
 player = objects.Player(50,50)
+crowd = [objects.Person(100, 100)]
 game_objects.append(player)
+game_objects.extend(crowd)
+
+non_player_objects = list(game_objects)
+non_player_objects.remove(player)
+print non_player_objects
 
 # Main Program Loop
 while done == False:
@@ -47,12 +53,24 @@ while done == False:
 
     if pressed[pygame.K_a] and player.pos.x > 0:
         player.pos -= (1,0)
+        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
+                                   pygame.sprite.collide_circle):
+            player.pos += (1,0)'''
     if pressed[pygame.K_d] and player.pos.x < size[0]:
         player.pos += (1,0)
+        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
+                                   pygame.sprite.collide_circle):
+            player.pos -= (1,0)'''
     if pressed[pygame.K_w] and player.pos.y > 0:
         player.pos -= (0,1)
+        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
+                                   pygame.sprite.collide_circle):
+            player.pos += (0,1)'''
     if pressed[pygame.K_s] and player.pos.y < size[1]:
         player.pos += (0,1)
+        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
+                                   pygame.sprite.collide_circle):
+            player.pos -= (0,1)'''
 
     # Perform the actions of each object
     for obj in game_objects:
