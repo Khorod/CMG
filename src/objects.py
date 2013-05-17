@@ -9,15 +9,37 @@ import utils
 class GameObject(object):
     """Abstract superclass for all objects in the game."""
     world = None
+	def __init__(self, pos=(0, 0), frames=None):
+			super(Sprite, self).__init__()
+			self.image = frames[0][0]
+			self.rect = self.image.get_rect()
+			self.pos = pos
+			
 
-    def draw(self, surface):
-        """Draws the object to the given surface."""
-        raise NotImplementedError()
-
-    def step(self):
+    def update(self):
         """Executes the main logic of the object. This method is called every 
         timestep."""
         raise NotImplementedError()
+		
+
+    def _get_pos(self):
+        """Check the current position of the sprite on the map."""
+
+        return (self.rect.midbottom[0]-12)/24, (self.rect.midbottom[1]-16)/16
+
+    def _set_pos(self, pos):
+        """Set the position and depth of the sprite on the map."""
+
+        self.rect.midbottom = pos[0]*24+12, pos[1]*16+16
+        self.depth = self.rect.midbottom[1]
+
+    pos = property(_get_pos, _set_pos)
+
+    def move(self, dx, dy):
+        """Change the position of the sprite on screen."""
+
+        self.rect.move_ip(dx, dy)
+        self.depth = self.rect.midbottom[1]        
 
 class Person(GameObject):
     """Class for one person."""

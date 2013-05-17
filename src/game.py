@@ -33,6 +33,24 @@ game_objects = []
 player = objects.Player(50,50)
 game_objects.append(player)
 
+
+screen = pygame.display.set_mode((424, 320))
+
+MAP_TILE_WIDTH = 24
+MAP_TILE_HEIGHT = 16
+MAP_CACHE = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+
+level = Level()
+level.load_file('level.map')
+
+SPRITE_CACHE = TileCache(32, 32)
+sprites = pygame.sprite.RenderUpdates()
+for pos, tile in level.items.iteritems():
+	sprite = Sprite(pos, SPRITE_CACHE[tile["sprite"]])
+	sprites.add(sprite)
+
+clock = pygame.time.Clock()
+
 # Main Program Loop
 while done == False:
     for event in pygame.event.get(): # User did something
@@ -56,18 +74,29 @@ while done == False:
 
     # Perform the actions of each object
     for obj in game_objects:
-        obj.step()
+        obj.update()
  
     # Set the screen background
     screen.fill(white)
  
     # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
 
+    background, overlay_dict = level.render()
+    overlays = pygame.sprite.RenderUpdates()
+    for (x, y), image in overlay_dict.iteritems():
+        overlay = pygame.sprite.Sprite(overlays)
+        overlay.image = image
+        overlay.rect = image.get_rect().move(x * 24, y * 16 - 16)
+    screen.blit(background, (0, 0))
+    overlays.draw(screen)
+    
+    #sprites.clear(screen, background)
+    dirty = sprites.draw(screen)
+    overlays.draw(screen)
+    #pygame.display.update(dirty)
+
     # Get mouse position
     click = pygame.mouse.get_pressed()
-
-    for obj in game_objects:
-        obj.draw(screen)
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
      
