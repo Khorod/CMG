@@ -1,3 +1,5 @@
+"""By Michael Cabot, Steven Laan, Richard Rozeboom"""
+
 import pygame
 
 # Own imports
