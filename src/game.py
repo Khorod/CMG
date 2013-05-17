@@ -188,7 +188,7 @@ for pos, tile in level.items.iteritems():
     game_objects.add(sprite)
 
 # Create a player
-player = objects.Player(utils.Point(50, 50), SPRITE_CACHE[tile["sprite"]])
+player = objects.Player((5, 5), SPRITE_CACHE[tile["sprite"]])
 game_objects.add(player)
     
 clock = pygame.time.Clock()
@@ -205,7 +205,6 @@ while done == False:
     # Handle player movement
     pressed = pygame.key.get_pressed()
 
-    print type(player.pos)
     if pressed[pygame.K_a]:
         player.pos -= (1,0)
     if pressed[pygame.K_d]:
