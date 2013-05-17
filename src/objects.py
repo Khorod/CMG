@@ -15,17 +15,21 @@ class GameObject(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.pos = utils.Point(position[0], position[1])
         
+    @property
+    def _tile_pos(self):
+        return utils.Point(self.pos.x / 24, self.pos.y / 16)
+        
     def _get_pos(self):
         """Check the current position of the sprite on the map."""
 
-        # TODO replace hardcoded 24 and 16
-        return utils.Point((self.rect.midbottom[0]-12)/24, (self.rect.midbottom[1]-16)/16)
+        # TODO replace hardcoded 12 and 16
+        return utils.Point((self.rect.midbottom[0]-12), (self.rect.midbottom[1]-16))
 
     def _set_pos(self, pos):
         """Set the position and depth of the sprite on the map."""
 
         # TODO replace hardcoded 24 and 16
-        self.rect.midbottom = pos.x * 24 + 12, pos.y * 16 + 16
+        self.rect.midbottom = pos.x + 12, pos.y + 16
         self.depth = self.rect.midbottom[1]
 
     pos = property(_get_pos, _set_pos)

@@ -184,7 +184,8 @@ level.load_file('level.map')
 SPRITE_CACHE = TileCache(32, 32)
 game_objects = pygame.sprite.RenderUpdates()
 for pos, tile in level.items.iteritems():
-    sprite = objects.GameObject(pos, SPRITE_CACHE[tile["sprite"]])
+    sprite = objects.GameObject((pos[0] * MAP_TILE_WIDTH, pos[1] *
+        MAP_TILE_HEIGHT), SPRITE_CACHE[tile["sprite"]])
     game_objects.add(sprite)
 
 # Create a player
@@ -205,14 +206,10 @@ while done == False:
     # Handle player movement
     pressed = pygame.key.get_pressed()
 
-    if pressed[pygame.K_a]:
-        player.pos -= (1,0)
-    if pressed[pygame.K_d]:
-        player.pos += (1,0)
-    if pressed[pygame.K_w]:
-        player.pos -= (0,1)
-    if pressed[pygame.K_s]:
-        player.pos += (0,1)
+    dx = pressed[pygame.K_d] - pressed[pygame.K_a]
+    dy = pressed[pygame.K_s] - pressed[pygame.K_w]
+
+    player.move(dx, dy)
 
     # Perform the actions of each object
     for obj in game_objects:
