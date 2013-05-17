@@ -99,7 +99,8 @@ class Level(object):
     def render(self):
         wall = self.is_wall
         tiles = MAP_CACHE[self.tileset]
-        image = pygame.Surface((self.width*MAP_TILE_WIDTH, self.height*MAP_TILE_HEIGHT))
+        image = pygame.Surface((self.width*MAP_TILE_WIDTH, 
+            self.height*MAP_TILE_HEIGHT))
         overlays = {}
         for map_y, line in enumerate(self.map):
             for map_x, c in enumerate(line):
@@ -183,8 +184,8 @@ level.load_file('level.map')
 SPRITE_CACHE = TileCache(32, 32)
 game_objects = pygame.sprite.RenderUpdates()
 for pos, tile in level.items.iteritems():
-	sprite = objects.GameObject(pos, SPRITE_CACHE[tile["sprite"]])
-	game_objects.add(sprite)
+    sprite = objects.GameObject(pos, SPRITE_CACHE[tile["sprite"]])
+    game_objects.add(sprite)
 
 # Create a player
 player = objects.Player(utils.Point(50, 50), SPRITE_CACHE[tile["sprite"]])
