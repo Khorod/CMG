@@ -45,13 +45,13 @@ while done == False:
     # Handle player movement
     pressed = pygame.key.get_pressed()
 
-    if pressed[pygame.K_a]:
+    if pressed[pygame.K_a] and player.pos.x > 0:
         player.pos -= (1,0)
-    if pressed[pygame.K_d]:
+    if pressed[pygame.K_d] and player.pos.x < size[0]:
         player.pos += (1,0)
-    if pressed[pygame.K_w]:
+    if pressed[pygame.K_w] and player.pos.y > 0:
         player.pos -= (0,1)
-    if pressed[pygame.K_s]:
+    if pressed[pygame.K_s] and player.pos.y < size[1]:
         player.pos += (0,1)
 
     # Perform the actions of each object
