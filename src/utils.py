@@ -1,6 +1,7 @@
+"""By Michael Cabot, Steven Laan, Richard Rozeboom"""
+
 class Point(tuple):
-    """
-    A representation of a point. Also implements basic arithmetic:
+    """Point object expands 'tuple' with arithmetic operators:
     >>> Point(4, 5) + Point(6, 5)
     (10, 10)
 
@@ -13,14 +14,13 @@ class Point(tuple):
     >>> p.x
     4
 
-    Awesome!
-    """
+    Awesome!"""
 
     def __new__(cls, a, b):
-        return super(Point, cls).__new__(cls, tuple((a,b)))
+        return super(Point, cls).__new__(cls, tuple((a, b)))
 
     def __init__(self, x, y):
-        super(Point, self).__init__(x,y)
+        super(Point, self).__init__(x, y)
 
     def __isub__(self, other):
         if isinstance(other, Point) or isinstance(other, tuple):
@@ -82,7 +82,7 @@ class Point(tuple):
         else:
             return NotImplementedError()
 
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-
