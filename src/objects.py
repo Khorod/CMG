@@ -6,22 +6,15 @@ from random import randint
 # Own imports
 import utils
 
-class GameObject(object):
+class GameObject(pygame.sprite.Sprite):
     """Abstract superclass for all objects in the game."""
     world = None
-	def __init__(self, pos=(0, 0), frames=None):
-			super(Sprite, self).__init__()
-			self.image = frames[0][0]
-			self.rect = self.image.get_rect()
-			self.pos = pos
-			
-
-    def update(self):
-        """Executes the main logic of the object. This method is called every 
-        timestep."""
-        raise NotImplementedError()
-		
-
+    def __init__(self, pos=(0, 0), frames=None):
+            super(GameObject, self).__init__()
+            self.image = frames[0][0]
+            self.rect = self.image.get_rect()
+            self.pos = utils.Point(pos[0], pos[1])
+        
     def _get_pos(self):
         """Check the current position of the sprite on the map."""
 
@@ -44,9 +37,8 @@ class GameObject(object):
 class Person(GameObject):
     """Class for one person."""
 
-    def __init__(self, x, y, color = None, radius = 8):
-        GameObject.__init__(self)
-        self.pos = utils.Point(x, y)
+    def __init__(self, pos, image, color = None, radius = 8):
+        GameObject.__init__(self, pos, image)
         self.goal = None
         if color != None:
             self.color = color
@@ -61,20 +53,18 @@ class Person(GameObject):
     def __str__(self):
         return self.__repr__()
 
-    def draw(self, surface):
-        pygame.draw.circle(surface, self.color, tuple(self.pos), self.radius, 0)
-
-    def step(self):
+    def update(self):
         pass
 
 
 class Player(Person):
     """Player object."""
 
-    def __init__(self, x, y):
-        Person.__init__(self, x, y, (255, 0, 0))
+    def __init__(self, pos, image):
+        Person.__init__(self, pos, image, (255, 0, 0))
+        self.pos = utils.Point(pos[0], pos[1])
         
-    def step(self):
+    def update(self):
         # Logic here!
         pass
 
@@ -82,9 +72,9 @@ class Player(Person):
 class Cop(Person):
     """Cop object."""
 
-    def __init__(self, x, y):
-        Person.__init__(self, x, y, (0, 0, 255))
+    def __init__(self, pos, image):
+        Person.__init__(self, pos, image, (0, 0, 255))
         
-    def step(self):
+    def update(self):
         # Logic here!
         pass
