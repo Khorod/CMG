@@ -1,4 +1,20 @@
 class Point(tuple):
+    """
+    A representation of a point. Also implements basic arithmetic:
+    >>> Point(4, 5) + Point(6, 5)
+    (10, 10)
+
+    Operations also work together with tuples!
+    >>> Point(4, 5) + (1, 2)
+    (5, 7)
+
+    Although it is a subclass of tuple, you can refer to coords:
+    >>> p = Point(4, 5)
+    >>> p.x
+    4
+
+    Awesome!
+    """
 
     def __new__(cls, a, b):
         return super(Point, cls).__new__(cls, tuple((a,b)))
@@ -65,11 +81,8 @@ class Point(tuple):
             return (diff[0]**2 + diff[1]**2)**0.5
         else:
             return NotImplementedError()
+
 if __name__ == '__main__':
-    origin = Point(0,0)
-    p = Point(3,4)
-    p2 = Point(3,4)
-    print p + p2
-    print p + (1,2)
-    print 'x of p:', p.x
-    print hash(p), hash(p2)
+    import doctest
+    doctest.testmod()
+
