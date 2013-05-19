@@ -1,5 +1,5 @@
 [level]
-tileset = ground2.png
+tileset = ../img/ground2.png
 map = .............
       .#####.##....
       .#...#..#....
@@ -22,4 +22,4 @@ block = true
 name = crate
 tile = 0, 3
 block = true
-sprite = crate.png
+sprite = ../img/crate.png

@@ -17,7 +17,7 @@ if __name__=='__main__':
     pygame.init()
     screen = pygame.display.set_mode((128, 98))
     screen.fill((255, 255, 255))
-    table = load_tile_table("ground2.png", 24, 16)
+    table = load_tile_table("../img/ground2.png", 24, 16)
     for x, row in enumerate(table):
         for y, tile in enumerate(row):
             screen.blit(tile, (x*32, y*24))
