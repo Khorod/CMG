@@ -4,82 +4,8 @@ import astar
 import ConfigParser
 from utils import Point
 
-COLLISION_MAP = [
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-]
-
 MAP_TILE_WIDTH = 24
 MAP_TILE_HEIGHT = 16
-
-class World:
-    """Word class"""
-
-    def __init__(self, collision_map, flow_map, mesh):
-        self.collision_map = collision_map
-        self.flow_map = flow_map
-        self.mesh = mesh
-        self.height = 10
-        self.width  = 10
-        self.tilesize = 40
-
-    def plan_path(self, start, goal):
-        """Return optimal path from start to goal."""
-        goal_func = lambda x: x == goal
-        heur_func = lambda x: goal.dist(x)
-        cost_func = lambda x, y: 1
-
-        path, _ = astar.astar(start, self.neighbors, goal_func, 0, 
-            cost_func, heur_func)
-        return path
-
-    def neighbors(self, pos, wall = 1):
-        """Yield the neighbouring positions."""
-        if pos.x > 0:
-            if self.collision_map[pos.x - 1][pos.y] < wall:
-                yield pos - (1, 0)
-
-        if pos.x < self.width - 1:
-            if self.collision_map[pos.x + 1][pos.y] < wall:
-                yield pos + (1, 0)
-        
-        if pos.y > 0:
-            if self.collision_map[pos.x][pos.y - 1] < wall:
-                yield pos - (0, 1)
-
-        if pos.y < self.height - 1:
-            if self.collision_map[pos.x][pos.y + 1] < wall:
-                yield pos + (0, 1)
-    
-    def place_free(self, game_object, pos):
-        """"Checks whether a place is collision-free. 
-        Position is in pixel coordinates.
-        Place is determined using the shape of the game object"""
-
-        # TODO implement
-        return True
-
-    def position_free(self, pos):
-        """Checks whether a position is collision-free.
-        Position is in pixel coordinates."""
-
-        # TODO implement
-        return True
-
-    def __repr__(self):
-        pass
-
-    def __str__(self):
-        pass
 
 class TileCache:
     """Load the tilesets lazily into global cache"""
@@ -128,6 +54,7 @@ class Level(object):
         parser.read(filename)
         self.tileset = parser.get("level", "tileset")
         self.map = parser.get("level", "map").split("\n")
+
         for section in parser.sections():
             if len(section) == 1:
                 desc = dict(parser.items(section))
@@ -171,6 +98,50 @@ class Level(object):
             return True
         return self.get_bool(x, y, 'block')
 
+    def plan_path(self, start, goal):
+        """Return optimal path from start to goal."""
+
+        goal_func = lambda x: x == goal
+        heur_func = lambda x: goal.dist(x)
+        cost_func = lambda x, y: 1
+
+        path, _ = astar.astar(start, self.neighbors, goal_func, 0, 
+            cost_func, heur_func)
+        return path
+
+    def neighbors(self, pos, wall = 1):
+        """Yield the neighbouring positions."""
+
+        if pos.x > 0:
+            if not self.is_wall(pos.x - 1,pos.y):
+                yield pos - (1, 0)
+
+        if pos.x < self.width - 1:
+            if not self.is_wall(pos.x + 1, pos.y):
+                yield pos + (1, 0)
+        
+        if pos.y > 0:
+            if not self.is_wall(pos.x, pos.y - 1):
+                yield pos - (0, 1)
+
+        if pos.y < self.height - 1:
+            if not self.is_wall(pos.x,pos.y + 1):
+                yield pos + (0, 1)
+    
+    def place_free(self, game_object, pos):
+        """"Checks whether a place is collision-free. 
+        Position is in pixel coordinates.
+        Place is determined using the shape of the game object"""
+
+        # TODO implement
+        return True
+
+    def position_free(self, pos):
+        """Checks whether a position is collision-free.
+        Position is in pixel coordinates."""
+
+        # TODO implement
+        return True
 
     def render(self):
         wall = self.is_wall
@@ -222,7 +193,4 @@ class Level(object):
                 image.blit(tile_image,
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
         return image, overlays       
-if __name__ == '__main__':
-    WORLD = World(COLLISION_MAP, None, None)
-    print WORLD.plan_path(Point(1, 1), Point(6, 4))
 

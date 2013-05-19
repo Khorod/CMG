@@ -42,8 +42,6 @@ for pos, tile in level.items.iteritems():
         world.MAP_TILE_HEIGHT), SPRITE_CACHE[tile["sprite"]])
     game_objects.add(sprite)
 
-WORLD = world.World(world.COLLISION_MAP, None, None)
-
 # Create a player
 player = objects.Player((5, 5), SPRITE_CACHE[tile["sprite"]])
 game_objects.add(player)
@@ -65,7 +63,7 @@ while done == False:
     dx = pressed[pygame.K_d] - pressed[pygame.K_a]
     dy = pressed[pygame.K_s] - pressed[pygame.K_w]
 
-    if WORLD.place_free(player, player.pos + (dx,dy)):
+    if level.place_free(player, player.pos + (dx,dy)):
         player.move(dx, dy)
 
     # Perform the actions of each object
