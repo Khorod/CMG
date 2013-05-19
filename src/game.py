@@ -1,8 +1,7 @@
 """By Michael Cabot, Steven Laan, Richard Rozeboom"""
 
 import pygame
-import copy
-# Own imports
+# Own modules
 import objects
 import world
 
@@ -27,27 +26,9 @@ done = False
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
  
-# List that contains every game object
-game_objects = []
-
 screen = pygame.display.set_mode((424, 320))
 
-level = world.Level()
-level.load_file('level.map')
-
-SPRITE_CACHE = world.TileCache(32, 32)
-game_objects = pygame.sprite.RenderUpdates()
-for pos, tile in level.items.iteritems():
-    sprite = objects.GameObject((pos[0] * world.MAP_TILE_WIDTH, pos[1] *
-        world.MAP_TILE_HEIGHT), SPRITE_CACHE[tile["sprite"]])
-    game_objects.add(sprite)
-
-# Create a player
-player = objects.Player((5, 5), SPRITE_CACHE[tile["sprite"]])
-game_objects.add(player)
-
-non_player_objects = copy.deepcopy(game_objects)
-non_player_objects.remove(player)
+level = world.Level('level.map')
     
 clock = pygame.time.Clock()
 
@@ -66,13 +47,9 @@ while done == False:
     dx = pressed[pygame.K_d] - pressed[pygame.K_a]
     dy = pressed[pygame.K_s] - pressed[pygame.K_w]
 
-    if level.place_free(player, player.pos + (dx, dy)):
-        player.move(dx, dy)
-
-    # Perform the actions of each object
-    for obj in game_objects:
-        obj.update()
- 
+    level.move_player(dx, dy)
+    level.update_objects()
+    
     # Set the screen background
     screen.fill(white)
  
@@ -88,7 +65,7 @@ while done == False:
     overlays.draw(screen)
     
     #sprites.clear(screen, background)
-    dirty = game_objects.draw(screen)
+    dirty = level.game_objects.draw(screen)
     overlays.draw(screen)
     #pygame.display.update(dirty)
 

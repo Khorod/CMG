@@ -2,7 +2,9 @@
 import pygame
 import astar
 import ConfigParser
+import copy
 from utils import Point
+import objects
 
 MAP_TILE_WIDTH = 24
 MAP_TILE_HEIGHT = 16
@@ -45,11 +47,29 @@ MAP_CACHE = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
 
 class Level(object):
 
-        
-    def load_file(self, filename="level.map"):
+    def __init__(self, filename="level.map"):
+        self.load_file(filename)
+        sprite_cache = TileCache(32, 32)
+        self.game_objects = pygame.sprite.RenderUpdates()
+        #for key, value in self.items.iteritems():
+        #    print key, value
+        for pos, tile in self.items.iteritems():
+            sprite = objects.GameObject((pos[0] * MAP_TILE_WIDTH, pos[1] *
+                MAP_TILE_HEIGHT), sprite_cache[tile["sprite"]])
+            self.game_objects.add(sprite)
+
+        # Create a player
+        # TODO use player sprite
+        self.player = objects.Player((5, 5), sprite_cache[tile["sprite"]])
+        self.game_objects.add(self.player)
+        # non-player objects
+        self.non_player_objects = copy.deepcopy(self.game_objects)
+        self.non_player_objects.remove(self.player)
+
+    def load_file(self, filename):
         self.map = []
         self.key = {}
-                    
+
         parser = ConfigParser.ConfigParser()
         parser.read(filename)
         self.tileset = parser.get("level", "tileset")
@@ -68,6 +88,17 @@ class Level(object):
                 if not self.is_wall(x, y) and 'sprite' in self.key[c]:
                     self.items[(x, y)] = self.key[c]
 
+    def move_player(self, dx, dy):
+        """Move the player if this does not cause a collision."""
+        self.player.move(dx, dy)
+        if False: #TODO collision
+            self.player.move(-dx, -dy) # undo movement
+
+    def update_objects(self):
+        """Perform the actions of each object."""
+        for obj in self.game_objects:
+            obj.update()
+        
     def get_tile(self, x, y):
         """Tell what's at the specified position of the map."""
 
@@ -194,3 +225,7 @@ class Level(object):
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
         return image, overlays       
 
+
+if __name__ == '__main__':
+    l = Level()
+    
