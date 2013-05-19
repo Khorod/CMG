@@ -6,7 +6,7 @@ map = .............
       .#..b####....
       .##.##.......
       .............
-      ..........bb.
+      p.........bb.
       ...###....b..
       .............
 [.]
@@ -23,3 +23,9 @@ name = crate
 tile = 0, 3
 block = true
 sprite = ../img/crate.png
+
+[p]
+name = player
+tile = 0, 3
+block = true
+sprite = ../img/player.png
