@@ -4,7 +4,6 @@ import pygame
 import copy
 # Own imports
 import objects
-import utils
 import world
 
 
@@ -17,7 +16,7 @@ red      = (230,  10,   0)
 pygame.init()
   
 # Set the height and width of the screen
-size=[400, 400]
+size = [400, 400]
 screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("My Game")
@@ -67,7 +66,7 @@ while done == False:
     dx = pressed[pygame.K_d] - pressed[pygame.K_a]
     dy = pressed[pygame.K_s] - pressed[pygame.K_w]
 
-    if level.place_free(player, player.pos + (dx,dy)):
+    if level.place_free(player, player.pos + (dx, dy)):
         player.move(dx, dy)
 
     # Perform the actions of each object
@@ -106,6 +105,6 @@ while done == False:
      
 # Be IDLE friendly. If you forget this line, the program will 'hang'
 # on exit.
-pygame.quit ()
+pygame.quit()
 
 
