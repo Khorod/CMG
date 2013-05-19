@@ -93,10 +93,21 @@ class Level(object):
                     self.items[(x, y)] = self.key[c]
 
     def move_player(self, dx, dy):
-        """Move the player if this does not cause a collision."""
+        """Move the player if this does not cause a collision. If there is a
+        collision and dx and dy are both non-zero, try to move only horizontal
+        or only vertical."""
         self.player.move(dx, dy)
-        if self.outside_screen(self.player.pos) or self.collision(self.player):
-            self.player.move(-dx, -dy) # undo movement
+        if not self.valid_position(self.player):
+            self.player.move(-dx, 0)
+            if not self.valid_position(self.player):
+                self.player.move(dx, -dy)
+                if not self.valid_position(self.player):
+                    self.player.move(-dx, 0)
+                
+
+    def valid_position(self, object):
+        return not self.outside_screen(self.player.pos) and \
+            not self.collision(self.player)
 
     def outside_screen(self, pos):
         """Check whether the given positoin is outside of the screen."""
