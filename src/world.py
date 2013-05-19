@@ -43,6 +43,12 @@ class TileCache:
                 line.append(image.subsurface(rect))
         return tile_table
 
+    def __repr__(self):
+        return str(self.cache)
+
+    def __str__(self):
+        return self.__repr__()
+
 MAP_CACHE = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
 
 class Level(object):
@@ -51,17 +57,19 @@ class Level(object):
         self.load_file(filename)
         sprite_cache = TileCache(32, 32)
         self.game_objects = pygame.sprite.RenderUpdates()
-        #for key, value in self.items.iteritems():
-        #    print key, value
-        for pos, tile in self.items.iteritems():
-            sprite = objects.GameObject((pos[0] * MAP_TILE_WIDTH, pos[1] *
-                MAP_TILE_HEIGHT), sprite_cache[tile["sprite"]])
-            self.game_objects.add(sprite)
+        for tile_pos, tile in self.items.iteritems():
+            position = (tile_pos[0] * MAP_TILE_WIDTH, 
+                        tile_pos[1] * MAP_TILE_HEIGHT)
+            sprite = sprite_cache[tile["sprite"]]
 
-        # Create a player
-        # TODO use player sprite
-        self.player = objects.Player((5, 5), sprite_cache[tile["sprite"]])
-        self.game_objects.add(self.player)
+            if tile["name"] == "player": # Create a player
+                self.player = objects.Player(position, sprite)
+                object = self.player
+            else:
+                object = objects.GameObject(position, sprite)
+                
+            self.game_objects.add(object)
+
         # non-player objects
         self.non_player_objects = copy.deepcopy(self.game_objects)
         self.non_player_objects.remove(self.player)
