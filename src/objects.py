@@ -6,25 +6,45 @@ from random import randint
 # Own imports
 import utils
 
-class GameObject(object):
+class GameObject(pygame.sprite.Sprite):
     """Abstract superclass for all objects in the game."""
     world = None
+    def __init__(self, position, frames=None):
+            super(GameObject, self).__init__()
+            self.image = frames[0][0]
+            self.rect = self.image.get_rect()
+            self.pos = utils.Point(position[0], position[1])
+        
+    @property
+    def _tile_pos(self):
+        return utils.Point(self.pos.x / 24, self.pos.y / 16)
+        
+    def _get_pos(self):
+        """Check the current position of the sprite on the map."""
 
-    def draw(self, surface):
-        """Draws the object to the given surface."""
-        raise NotImplementedError()
+        # TODO replace hardcoded 12 and 16
+        return utils.Point((self.rect.midbottom[0]-12), (self.rect.midbottom[1]-16))
 
-    def step(self):
-        """Executes the main logic of the object. This method is called every 
-        timestep."""
-        raise NotImplementedError()
+    def _set_pos(self, pos):
+        """Set the position and depth of the sprite on the map."""
+
+        # TODO replace hardcoded 24 and 16
+        self.rect.midbottom = pos.x + 12, pos.y + 16
+        self.depth = self.rect.midbottom[1]
+
+    pos = property(_get_pos, _set_pos)
+
+    def move(self, dx, dy):
+        """Change the position of the sprite on screen."""
+
+        self.rect.move_ip(dx, dy)
+        self.depth = self.rect.midbottom[1]        
 
 class Person(GameObject):
     """Class for one person."""
 
-    def __init__(self, x, y, color = None, radius = 8):
-        GameObject.__init__(self)
-        self.pos = utils.Point(x, y)
+    def __init__(self, position, image, color = None, radius = 8):
+        GameObject.__init__(self, position, image)
         self.goal = None
         if color != None:
             self.color = color
@@ -39,20 +59,17 @@ class Person(GameObject):
     def __str__(self):
         return self.__repr__()
 
-    def draw(self, surface):
-        pygame.draw.circle(surface, self.color, tuple(self.pos), self.radius, 0)
-
-    def step(self):
+    def update(self):
         pass
 
 
 class Player(Person):
     """Player object."""
 
-    def __init__(self, x, y):
-        Person.__init__(self, x, y, (255, 0, 0))
+    def __init__(self, position, image):
+        Person.__init__(self, position, image, (255, 0, 0))
         
-    def step(self):
+    def update(self):
         # Logic here!
         pass
 
@@ -60,9 +77,9 @@ class Player(Person):
 class Cop(Person):
     """Cop object."""
 
-    def __init__(self, x, y):
-        Person.__init__(self, x, y, (0, 0, 255))
+    def __init__(self, pos, image):
+        Person.__init__(self, pos, image, (0, 0, 255))
         
-    def step(self):
+    def update(self):
         # Logic here!
         pass

@@ -1,10 +1,12 @@
 """By Michael Cabot, Steven Laan, Richard Rozeboom"""
 
 import pygame
-
+import copy
 # Own imports
 import objects
 import utils
+import world
+
 
 # Define some colors
 black    = ( 10,  10,  10)
@@ -29,15 +31,26 @@ clock = pygame.time.Clock()
 # List that contains every game object
 game_objects = []
 
-# Create a player
-player = objects.Player(50,50)
-crowd = [objects.Person(100, 100)]
-game_objects.append(player)
-game_objects.extend(crowd)
+screen = pygame.display.set_mode((424, 320))
 
-non_player_objects = list(game_objects)
+level = world.Level()
+level.load_file('level.map')
+
+SPRITE_CACHE = world.TileCache(32, 32)
+game_objects = pygame.sprite.RenderUpdates()
+for pos, tile in level.items.iteritems():
+    sprite = objects.GameObject((pos[0] * world.MAP_TILE_WIDTH, pos[1] *
+        world.MAP_TILE_HEIGHT), SPRITE_CACHE[tile["sprite"]])
+    game_objects.add(sprite)
+
+# Create a player
+player = objects.Player((5, 5), SPRITE_CACHE[tile["sprite"]])
+game_objects.add(player)
+
+non_player_objects = copy.deepcopy(game_objects)
 non_player_objects.remove(player)
-print non_player_objects
+    
+clock = pygame.time.Clock()
 
 # Main Program Loop
 while done == False:
@@ -51,41 +64,37 @@ while done == False:
     # Handle player movement
     pressed = pygame.key.get_pressed()
 
-    if pressed[pygame.K_a] and player.pos.x > 0:
-        player.pos -= (1,0)
-        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
-                                   pygame.sprite.collide_circle):
-            player.pos += (1,0)'''
-    if pressed[pygame.K_d] and player.pos.x < size[0]:
-        player.pos += (1,0)
-        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
-                                   pygame.sprite.collide_circle):
-            player.pos -= (1,0)'''
-    if pressed[pygame.K_w] and player.pos.y > 0:
-        player.pos -= (0,1)
-        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
-                                   pygame.sprite.collide_circle):
-            player.pos += (0,1)'''
-    if pressed[pygame.K_s] and player.pos.y < size[1]:
-        player.pos += (0,1)
-        '''if pygame.sprite.spritecollideany(player, non_player_objects, 
-                                   pygame.sprite.collide_circle):
-            player.pos -= (0,1)'''
+    dx = pressed[pygame.K_d] - pressed[pygame.K_a]
+    dy = pressed[pygame.K_s] - pressed[pygame.K_w]
+
+    if level.place_free(player, player.pos + (dx,dy)):
+        player.move(dx, dy)
 
     # Perform the actions of each object
     for obj in game_objects:
-        obj.step()
+        obj.update()
  
     # Set the screen background
     screen.fill(white)
  
     # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
 
+    background, overlay_dict = level.render()
+    overlays = pygame.sprite.RenderUpdates()
+    for (x, y), image in overlay_dict.iteritems():
+        overlay = pygame.sprite.Sprite(overlays)
+        overlay.image = image
+        overlay.rect = image.get_rect().move(x * 24, y * 16 - 16)
+    screen.blit(background, (0, 0))
+    overlays.draw(screen)
+    
+    #sprites.clear(screen, background)
+    dirty = game_objects.draw(screen)
+    overlays.draw(screen)
+    #pygame.display.update(dirty)
+
     # Get mouse position
     click = pygame.mouse.get_pressed()
-
-    for obj in game_objects:
-        obj.draw(screen)
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
      
@@ -98,3 +107,5 @@ while done == False:
 # Be IDLE friendly. If you forget this line, the program will 'hang'
 # on exit.
 pygame.quit ()
+
+

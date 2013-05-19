@@ -1,0 +1,25 @@
+[level]
+tileset = ground2.png
+map = .............
+      .#####.##....
+      .#...#..#....
+      .#..b####....
+      .##.##.......
+      .............
+      ..........bb.
+      ...###....b..
+      .............
+[.]
+name = floor
+tile = 0, 3
+
+[#]
+name = wall
+wall = true
+block = true
+
+[b]
+name = crate
+tile = 0, 3
+block = true
+sprite = crate.png

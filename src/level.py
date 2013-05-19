@@ -1,47 +1,6 @@
-"""By Michael Cabot, Steven Laan, Richard Rozeboom"""
-import pygame
-import astar
 import ConfigParser
-from utils import Point
-
-MAP_TILE_WIDTH = 24
-MAP_TILE_HEIGHT = 16
-
-class TileCache:
-    """Load the tilesets lazily into global cache"""
-
-    def __init__(self,  width=32, height=None):
-        self.width = width
-        self.height = height or width
-        self.cache = {}
-
-    def __getitem__(self, filename):
-        """Return a table of tiles, load it from disk if needed."""
-
-        key = (filename, self.width, self.height)
-        try:
-            return self.cache[key]
-        except KeyError:
-            tile_table = self._load_tile_table(filename, self.width,
-                                               self.height)
-            self.cache[key] = tile_table
-            return tile_table
-
-    def _load_tile_table(self, filename, width, height):
-        """Load an image and split it into tiles."""
-
-        image = pygame.image.load(filename).convert()
-        image_width, image_height = image.get_size()
-        tile_table = []
-        for tile_x in range(0, image_width/width):
-            line = []
-            tile_table.append(line)
-            for tile_y in range(0, image_height/height):
-                rect = (tile_x*width, tile_y*height, width, height)
-                line.append(image.subsurface(rect))
-        return tile_table
-
-MAP_CACHE = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+import pygame
+import pygame.locals
 
 class Level(object):
 
@@ -54,7 +13,6 @@ class Level(object):
         parser.read(filename)
         self.tileset = parser.get("level", "tileset")
         self.map = parser.get("level", "map").split("\n")
-
         for section in parser.sections():
             if len(section) == 1:
                 desc = dict(parser.items(section))
@@ -98,56 +56,11 @@ class Level(object):
             return True
         return self.get_bool(x, y, 'block')
 
-    def plan_path(self, start, goal):
-        """Return optimal path from start to goal."""
-
-        goal_func = lambda x: x == goal
-        heur_func = lambda x: goal.dist(x)
-        cost_func = lambda x, y: 1
-
-        path, _ = astar.astar(start, self.neighbors, goal_func, 0, 
-            cost_func, heur_func)
-        return path
-
-    def neighbors(self, pos, wall = 1):
-        """Yield the neighbouring positions."""
-
-        if pos.x > 0:
-            if not self.is_wall(pos.x - 1,pos.y):
-                yield pos - (1, 0)
-
-        if pos.x < self.width - 1:
-            if not self.is_wall(pos.x + 1, pos.y):
-                yield pos + (1, 0)
-        
-        if pos.y > 0:
-            if not self.is_wall(pos.x, pos.y - 1):
-                yield pos - (0, 1)
-
-        if pos.y < self.height - 1:
-            if not self.is_wall(pos.x,pos.y + 1):
-                yield pos + (0, 1)
-    
-    def place_free(self, game_object, pos):
-        """"Checks whether a place is collision-free. 
-        Position is in pixel coordinates.
-        Place is determined using the shape of the game object"""
-
-        # TODO implement
-        return True
-
-    def position_free(self, pos):
-        """Checks whether a position is collision-free.
-        Position is in pixel coordinates."""
-
-        # TODO implement
-        return True
 
     def render(self):
         wall = self.is_wall
         tiles = MAP_CACHE[self.tileset]
-        image = pygame.Surface((self.width*MAP_TILE_WIDTH, 
-            self.height*MAP_TILE_HEIGHT))
+        image = pygame.Surface((self.width*MAP_TILE_WIDTH, self.height*MAP_TILE_HEIGHT))
         overlays = {}
         for map_y, line in enumerate(self.map):
             for map_x, c in enumerate(line):
@@ -192,5 +105,114 @@ class Level(object):
                 tile_image = tiles[tile[0]][tile[1]]
                 image.blit(tile_image,
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
-        return image, overlays       
+        return image, overlays
 
+class TileCache:
+    """Load the tilesets lazily into global cache"""
+
+    def __init__(self,  width=32, height=None):
+        self.width = width
+        self.height = height or width
+        self.cache = {}
+
+    def __getitem__(self, filename):
+        """Return a table of tiles, load it from disk if needed."""
+
+        key = (filename, self.width, self.height)
+        try:
+            return self.cache[key]
+        except KeyError:
+            tile_table = self._load_tile_table(filename, self.width,
+                                               self.height)
+            self.cache[key] = tile_table
+            return tile_table
+
+    def _load_tile_table(self, filename, width, height):
+        """Load an image and split it into tiles."""
+
+        image = pygame.image.load(filename).convert()
+        image_width, image_height = image.get_size()
+        tile_table = []
+        for tile_x in range(0, image_width/width):
+            line = []
+            tile_table.append(line)
+            for tile_y in range(0, image_height/height):
+                rect = (tile_x*width, tile_y*height, width, height)
+                line.append(image.subsurface(rect))
+        return tile_table
+
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self, pos=(0, 0), frames=None):
+        super(Sprite, self).__init__()
+        self.image = frames[0][0]
+        self.rect = self.image.get_rect()
+        self.pos = pos
+
+    def _get_pos(self):
+        """Check the current position of the sprite on the map."""
+
+        return (self.rect.midbottom[0]-12)/24, (self.rect.midbottom[1]-16)/16
+
+    def _set_pos(self, pos):
+        """Set the position and depth of the sprite on the map."""
+
+        self.rect.midbottom = pos[0]*24+12, pos[1]*16+16
+        self.depth = self.rect.midbottom[1]
+
+    pos = property(_get_pos, _set_pos)
+
+    def move(self, dx, dy):
+        """Change the position of the sprite on screen."""
+
+        self.rect.move_ip(dx, dy)
+        self.depth = self.rect.midbottom[1]        
+
+        
+        
+if __name__ == "__main__":
+    screen = pygame.display.set_mode((424, 320))
+
+    MAP_TILE_WIDTH = 24
+    MAP_TILE_HEIGHT = 16
+    MAP_CACHE = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+
+    level = Level()
+    level.load_file('level.map')
+    
+    SPRITE_CACHE = TileCache(32, 32)
+    sprites = pygame.sprite.RenderUpdates()
+    for pos, tile in level.items.iteritems():
+        sprite = Sprite(pos, SPRITE_CACHE[tile["sprite"]])
+        sprites.add(sprite)
+    
+    clock = pygame.time.Clock()
+
+    game_over = False
+while not game_over:
+
+    # XXX draw all the objects here
+    background, overlay_dict = level.render()
+    overlays = pygame.sprite.RenderUpdates()
+    for (x, y), image in overlay_dict.iteritems():
+        overlay = pygame.sprite.Sprite(overlays)
+        overlay.image = image
+        overlay.rect = image.get_rect().move(x * 24, y * 16 - 16)
+    screen.blit(background, (0, 0))
+    overlays.draw(screen)
+    pygame.display.flip()
+    
+    
+    sprites.clear(screen, background)
+    dirty = sprites.draw(screen)
+    overlays.draw(screen)
+    pygame.display.update(dirty)
+    clock.tick(15)
+    for event in pygame.event.get():
+        if event.type == pygame.locals.QUIT:
+            game_over = True
+        elif event.type == pygame.locals.KEYDOWN:
+            pressed_key = event.key
+
+    
+    
+    
