@@ -188,31 +188,28 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     game_over = False
-while not game_over:
+    while not game_over:
 
-    # XXX draw all the objects here
-    background, overlay_dict = level.render()
-    overlays = pygame.sprite.RenderUpdates()
-    for (x, y), image in overlay_dict.iteritems():
-        overlay = pygame.sprite.Sprite(overlays)
-        overlay.image = image
-        overlay.rect = image.get_rect().move(x * 24, y * 16 - 16)
-    screen.blit(background, (0, 0))
-    overlays.draw(screen)
-    pygame.display.flip()
-    
-    
-    sprites.clear(screen, background)
-    dirty = sprites.draw(screen)
-    overlays.draw(screen)
-    pygame.display.update(dirty)
-    clock.tick(15)
-    for event in pygame.event.get():
-        if event.type == pygame.locals.QUIT:
-            game_over = True
-        elif event.type == pygame.locals.KEYDOWN:
-            pressed_key = event.key
+        # XXX draw all the objects here
+        background, overlay_dict = level.render()
+        overlays = pygame.sprite.RenderUpdates()
+        for (x, y), image in overlay_dict.iteritems():
+            overlay = pygame.sprite.Sprite(overlays)
+            overlay.image = image
+            overlay.rect = image.get_rect().move(x * 24, y * 16 - 16)
+        screen.blit(background, (0, 0))
+        overlays.draw(screen)
+        pygame.display.flip()
+        
+        
+        sprites.clear(screen, background)
+        dirty = sprites.draw(screen)
+        overlays.draw(screen)
+        pygame.display.update(dirty)
+        clock.tick(15)
+        for event in pygame.event.get():
+            if event.type == pygame.locals.QUIT:
+                game_over = True
+            elif event.type == pygame.locals.KEYDOWN:
+                pressed_key = event.key
 
-    
-    
-    
