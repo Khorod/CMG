@@ -82,6 +82,12 @@ class Point(tuple):
         else:
             return NotImplementedError()
 
+    def __repr__(self):
+        return 'Point(%s, %s)' % (self.x, self.y)
+
+    def __str__(self):
+        return self.__repr__()
+
 
 if __name__ == '__main__':
     import doctest
