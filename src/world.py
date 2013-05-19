@@ -70,10 +70,6 @@ class Level(object):
                 
             self.game_objects.add(object)
 
-        # non-player objects
-        self.non_player_objects = copy.deepcopy(self.game_objects)
-        self.non_player_objects.remove(self.player)
-
     def load_file(self, filename):
         self.map = []
         self.key = {}
@@ -99,8 +95,19 @@ class Level(object):
     def move_player(self, dx, dy):
         """Move the player if this does not cause a collision."""
         self.player.move(dx, dy)
-        if False: #TODO collision
+        if self.outside_screen(self.player.pos) or self.collision(self.player):
             self.player.move(-dx, -dy) # undo movement
+
+    def outside_screen(self, pos):
+        """Check whether the given positoin is outside of the screen."""
+        return pos.x < 0 or pos.y < 0 # TODO max range
+
+    def collision(self, object):
+        """Check for collision."""
+        self.game_objects.remove(object) # do not detect collision with itself
+        collided = pygame.sprite.spritecollideany(object, self.game_objects)
+        self.game_objects.add(object)
+        return collided
 
     def update_objects(self):
         """Perform the actions of each object."""
@@ -109,7 +116,6 @@ class Level(object):
         
     def get_tile(self, x, y):
         """Tell what's at the specified position of the map."""
-
         try:
             char = self.map[y][x]
         except IndexError:
