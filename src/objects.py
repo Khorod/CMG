@@ -9,11 +9,14 @@ import utils
 class GameObject(pygame.sprite.Sprite):
     """Abstract superclass for all objects in the game."""
     world = None
-    def __init__(self, position, frames=None):
-            super(GameObject, self).__init__()
-            self.image = frames[0][0]
+    def __init__(self, position, frames, rect = None):
+        super(GameObject, self).__init__()
+        self.image = frames[0][0]
+        if rect == None:
             self.rect = self.image.get_rect()
-            self.pos = utils.Point(position[0], position[1])
+        else:
+            self.rect = rect
+        self.pos = utils.Point(position[0], position[1])
         
     @property
     def _tile_pos(self):
