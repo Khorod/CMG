@@ -2,8 +2,6 @@
 import pygame
 import astar
 import ConfigParser
-import copy
-from utils import Point
 import objects
 
 MAP_TILE_WIDTH = 32
@@ -74,11 +72,11 @@ class Level(object):
 
             if tile["name"] == "player": # Create a player
                 self.player = objects.Player(position, sprite, rect)
-                object = self.player
+                entity = self.player
             else:
-                object = objects.GameObject(position, sprite, rect)
+                entity = objects.GameObject(position, sprite, rect)
                 
-            self.game_objects.add(object)
+            self.game_objects.add(entity)
 
     def load_file(self, filename):
         self.map = []
@@ -115,20 +113,22 @@ class Level(object):
                     self.player.move(-dx, 0)
                 
 
-    def valid_position(self, object):
-        return not self.outside_screen(self.player.pos) and \
-            not self.collision(self.player)
+    def valid_position(self, entity):
+        """Check whether the entity's position is valid, i.e. it is inside the
+        screen and has no collision."""
+        return not self.outside_screen(entity.pos) and \
+            not self.collision(entity)
 
     def outside_screen(self, pos):
-        """Check whether the given positoin is outside of the screen."""
+        """Check whether the given position is outside of the screen."""
         return pos.x < 0 or pos.y < 0 or \
             pos.x > self.screen_size[0] or pos.y > self.screen_size[1]
 
-    def collision(self, object):
+    def collision(self, entity):
         """Check for collision."""
-        self.game_objects.remove(object) # do not detect collision with itself
-        collided = pygame.sprite.spritecollideany(object, self.game_objects)
-        self.game_objects.add(object)
+        self.game_objects.remove(entity) # do not detect collision with itself
+        collided = pygame.sprite.spritecollideany(entity, self.game_objects)
+        self.game_objects.add(entity)
         return collided
 
     def update_objects(self):
@@ -180,7 +180,7 @@ class Level(object):
         """Yield the neighbouring positions."""
 
         if pos.x > 0:
-            if not self.is_wall(pos.x - 1,pos.y):
+            if not self.is_wall(pos.x - 1, pos.y):
                 yield pos - (1, 0)
 
         if pos.x < self.width - 1:
@@ -192,7 +192,7 @@ class Level(object):
                 yield pos - (0, 1)
 
         if pos.y < self.height - 1:
-            if not self.is_wall(pos.x,pos.y + 1):
+            if not self.is_wall(pos.x, pos.y + 1):
                 yield pos + (0, 1)
     
     def place_free(self, game_object, pos):
@@ -264,5 +264,5 @@ class Level(object):
 
 
 if __name__ == '__main__':
-    l = Level()
+    pass
     
