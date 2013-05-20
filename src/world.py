@@ -6,7 +6,7 @@ import copy
 from utils import Point
 import objects
 
-MAP_TILE_WIDTH = 24
+MAP_TILE_WIDTH = 32
 MAP_TILE_HEIGHT = 16
 
 class TileCache:
@@ -60,7 +60,8 @@ class SortedUpdates(pygame.sprite.RenderUpdates):
 
 class Level(object):
 
-    def __init__(self, filename="level.map"):
+    def __init__(self, screen_size, filename="level.map"):
+        self.screen_size = screen_size
         self.load_file(filename)
         sprite_cache = TileCache(32, 32)
         self.game_objects = SortedUpdates()
@@ -120,7 +121,8 @@ class Level(object):
 
     def outside_screen(self, pos):
         """Check whether the given positoin is outside of the screen."""
-        return pos.x < 0 or pos.y < 0 # TODO max range
+        return pos.x < 0 or pos.y < 0 or \
+            pos.x > self.screen_size[0] or pos.y > self.screen_size[1]
 
     def collision(self, object):
         """Check for collision."""

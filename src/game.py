@@ -19,9 +19,10 @@ pygame.display.set_caption("My Game")
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-screen = pygame.display.set_mode((424, 320))
+screen_size = (1120, 320)
+screen = pygame.display.set_mode(screen_size)
 
-level = world.Level('level.map')
+level = world.Level(screen_size, 'level.map')
 
 #Loop until the user clicks the close button.
 done = False
