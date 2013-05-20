@@ -49,14 +49,21 @@ class TileCache:
     def __str__(self):
         return self.__repr__()
 
-MAP_CACHE = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+
+class SortedUpdates(pygame.sprite.RenderUpdates):
+    """A sprite group that sorts them by depth."""
+
+    def sprites(self):
+        """The list of sprites in the group, sorted by depth."""
+        return sorted(self.spritedict.keys(), key=lambda sprite: sprite.depth)
+
 
 class Level(object):
 
     def __init__(self, filename="level.map"):
         self.load_file(filename)
         sprite_cache = TileCache(32, 32)
-        self.game_objects = pygame.sprite.RenderUpdates()
+        self.game_objects = SortedUpdates()
         for tile_pos, tile in self.items.iteritems():
             position = (tile_pos[0] * MAP_TILE_WIDTH, 
                         tile_pos[1] * MAP_TILE_HEIGHT)
@@ -201,7 +208,8 @@ class Level(object):
 
     def render(self):
         wall = self.is_wall
-        tiles = MAP_CACHE[self.tileset]
+        map_cache = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+        tiles = map_cache[self.tileset]
         image = pygame.Surface((self.width*MAP_TILE_WIDTH, 
             self.height*MAP_TILE_HEIGHT))
         overlays = {}
