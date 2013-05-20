@@ -23,9 +23,11 @@ name = crate
 tile = 0, 3
 block = true
 sprite = ../img/crate.png
+rect = 0, 0, 32, 18
 
 [p]
 name = player
 tile = 0, 3
 block = true
 sprite = ../img/player.png
+rect = 0, 0, 32, 18

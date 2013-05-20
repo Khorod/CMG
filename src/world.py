@@ -68,12 +68,14 @@ class Level(object):
             position = (tile_pos[0] * MAP_TILE_WIDTH, 
                         tile_pos[1] * MAP_TILE_HEIGHT)
             sprite = sprite_cache[tile["sprite"]]
+            parsed_rect = [int(v) for v in tile["rect"].split(', ')]
+            rect = pygame.Rect(parsed_rect)
 
             if tile["name"] == "player": # Create a player
-                self.player = objects.Player(position, sprite)
+                self.player = objects.Player(position, sprite, rect)
                 object = self.player
             else:
-                object = objects.GameObject(position, sprite)
+                object = objects.GameObject(position, sprite, rect)
                 
             self.game_objects.add(object)
 
