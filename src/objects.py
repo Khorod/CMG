@@ -25,9 +25,8 @@ class GameObject(pygame.sprite.Sprite):
         
     def _get_pos(self):
         """Check the current position of the sprite on the map."""
-
-        # TODO replace hardcoded 12 and 16
-        return utils.Point((self.rect.midbottom[0]-12), (self.rect.midbottom[1]-16))
+        x, y = self.rect.center
+        return utils.Point(x, y)
 
     def _set_pos(self, pos):
         """Set the position and depth of the sprite on the map."""
