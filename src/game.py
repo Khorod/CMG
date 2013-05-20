@@ -14,23 +14,17 @@ red      = (230,  10,   0)
  
 pygame.init()
   
-# Set the height and width of the screen
-size = [400, 400]
-screen = pygame.display.set_mode(size)
-
 pygame.display.set_caption("My Game")
- 
-#Loop until the user clicks the close button.
-done = False
  
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
- 
+
 screen = pygame.display.set_mode((424, 320))
 
 level = world.Level('level.map')
-    
-clock = pygame.time.Clock()
+
+#Loop until the user clicks the close button.
+done = False
 
 # Main Program Loop
 while done == False:
