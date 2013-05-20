@@ -14,6 +14,7 @@ class GameObject(pygame.sprite.Sprite):
         self.image = frames[0][0]
         if rect == None:
             self.rect = self.image.get_rect()
+            print self.rect
         else:
             self.rect = rect
         self.pos = utils.Point(position[0], position[1])
@@ -46,8 +47,8 @@ class GameObject(pygame.sprite.Sprite):
 class Person(GameObject):
     """Class for one person."""
 
-    def __init__(self, position, image, color = None, radius = 8):
-        GameObject.__init__(self, position, image)
+    def __init__(self, position, image, color = None, rect = None, radius = 8):
+        GameObject.__init__(self, position, image, rect)
         self.goal = None
         if color != None:
             self.color = color
@@ -69,8 +70,8 @@ class Person(GameObject):
 class Player(Person):
     """Player object."""
 
-    def __init__(self, position, image):
-        Person.__init__(self, position, image, (255, 0, 0))
+    def __init__(self, position, image, rect = None, radius = 8):
+        Person.__init__(self, position, image, (255, 0, 0), rect, radius)
         
     def update(self):
         # Logic here!
