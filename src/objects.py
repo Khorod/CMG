@@ -18,6 +18,8 @@ class GameObject(pygame.sprite.Sprite):
         else:
             self.rect = rect
         self.pos = utils.Point(position[0], position[1])
+        self.frames = frames
+        self.animation = self.stand_animation()
         
     @property
     def _tile_pos(self):
@@ -41,7 +43,21 @@ class GameObject(pygame.sprite.Sprite):
         """Change the position of the sprite on screen."""
 
         self.rect.move_ip(dx, dy)
-        self.depth = self.rect.midbottom[1]        
+        self.depth = self.rect.midbottom[1]  
+        
+    def stand_animation(self):
+        """The default animation."""
+
+        while True:
+            # Change to next frame every two ticks
+            for frame in self.frames[0]:
+                self.image = frame
+                yield None
+                yield None
+
+    def update(self, *args):
+            """Run the current animation."""
+            self.animation.next()                
 
 class Person(GameObject):
     """Class for one person."""
@@ -71,10 +87,28 @@ class Player(Person):
 
     def __init__(self, position, image, rect = None, radius = 8):
         Person.__init__(self, position, image, (255, 0, 0), rect, radius)
-        
-    def update(self):
-        # Logic here!
-        pass
+        self.direction = 2
+        self.animation = None
+        self.image = self.frames[self.direction][0]
+
+    def walk_animation(self):
+        """Animation for the player walking."""
+
+        # This animation is hardcoded for 4 frames and 16x24 map tiles
+        for frame in range(4):
+            self.image = self.frames[self.direction][frame]
+
+
+    def update(self, *args):
+        """Run the current animation or just stand there if no animation set."""
+
+        if self.animation is None:
+            self.image = self.frames[self.direction][0]
+        else:
+            try:
+                self.animation.next()
+            except StopIteration:
+                self.animation = None
 
 
 class Cop(Person):

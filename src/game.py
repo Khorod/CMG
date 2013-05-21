@@ -1,6 +1,7 @@
 """By Michael Cabot, Steven Laan, Richard Rozeboom"""
 
 import pygame
+import pygame.locals as pg
 # Own modules
 import objects
 import world
@@ -41,7 +42,17 @@ while done == False:
 
     dx = pressed[pygame.K_d] - pressed[pygame.K_a]
     dy = pressed[pygame.K_s] - pressed[pygame.K_w]
+    
 
+    if pressed[pygame.K_w]:
+        level.walk_animation(0)
+    elif pressed[pygame.K_s]:
+        level.walk_animation(2)
+    elif pressed[pygame.K_a]:
+        level.walk_animation(3)
+    elif pressed[pygame.K_d]:
+        level.walk_animation(1)
+            
     level.move_player(dx, dy)
     level.update_objects()
     

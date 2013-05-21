@@ -99,6 +99,11 @@ class Level(object):
             for x, c in enumerate(line):
                 if not self.is_wall(x, y) and 'sprite' in self.key[c]:
                     self.items[(x, y)] = self.key[c]
+                    
+    def walk_animation(self,d):
+        """Start walking in specified direction."""
+        self.player.direction = d
+        self.player.animation = self.player.walk_animation()
 
     def move_player(self, dx, dy):
         """Move the player if this does not cause a collision. If there is a
