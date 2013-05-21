@@ -18,7 +18,8 @@ class GameObject(pygame.sprite.Sprite):
         else:
             self.rect = rect
         self.pos = utils.Point(position[0], position[1])
-        self.frames = frames
+        if frames:
+            self.frames = frames
         self.animation = self.stand_animation()
         
     @property
@@ -97,7 +98,8 @@ class Player(Person):
         # This animation is hardcoded for 4 frames and 16x24 map tiles
         for frame in range(4):
             self.image = self.frames[self.direction][frame]
-
+            yield None
+            yield None
 
     def update(self, *args):
         """Run the current animation or just stand there if no animation set."""

@@ -37,30 +37,13 @@ while done == False:
             if event.key == pygame.K_ESCAPE:
                 done = True
 
-    # Handle player movement
-    pressed = pygame.key.get_pressed()
-
-    dx = pressed[pygame.K_d] - pressed[pygame.K_a]
-    dy = pressed[pygame.K_s] - pressed[pygame.K_w]
     
-
-    if pressed[pygame.K_w]:
-        level.walk_animation(0)
-    elif pressed[pygame.K_s]:
-        level.walk_animation(2)
-    elif pressed[pygame.K_a]:
-        level.walk_animation(3)
-    elif pressed[pygame.K_d]:
-        level.walk_animation(1)
-            
-    level.move_player(dx, dy)
-    level.update_objects()
     
     # Set the screen background
     screen.fill(white)
  
     # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
-
+    
     background, overlay_dict = level.render()
     overlays = pygame.sprite.RenderUpdates()
     for (x, y), image in overlay_dict.iteritems():
@@ -70,10 +53,32 @@ while done == False:
     screen.blit(background, (0, 0))
     overlays.draw(screen)
     
-    #sprites.clear(screen, background)
+    level.game_objects.clear(screen, background)
+    level.update_objects()
+    
+    if level.player.animation is None:
+        # Handle player movement
+        pressed = pygame.key.get_pressed()
+
+        dx = pressed[pygame.K_d] - pressed[pygame.K_a]
+        dy = pressed[pygame.K_s] - pressed[pygame.K_w]
+        
+
+        if pressed[pygame.K_w]:
+            level.walk_animation(0)
+        elif pressed[pygame.K_s]:
+            level.walk_animation(2)
+        elif pressed[pygame.K_a]:
+            level.walk_animation(3)
+        elif pressed[pygame.K_d]:
+            level.walk_animation(1)
+                
+    level.move_player(2*dx, 2*dy)
+    level.player.update()
+    
     dirty = level.game_objects.draw(screen)
     overlays.draw(screen)
-    #pygame.display.update(dirty)
+    pygame.display.update(dirty)
 
     # Get mouse position
     click = pygame.mouse.get_pressed()
