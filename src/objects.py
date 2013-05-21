@@ -100,7 +100,11 @@ class Player(Person):
             self.image = self.frames[self.direction][frame]
             yield None
             yield None
-
+            yield None
+            yield None
+            yield None
+            yield None
+            
     def update(self, *args):
         """Run the current animation or just stand there if no animation set."""
 
