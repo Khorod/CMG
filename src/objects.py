@@ -1,7 +1,6 @@
 """By Michael Cabot, Steven Laan, Richard Rozeboom"""
 
 import pygame
-from random import randint
 from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 
 # Own imports
@@ -28,6 +27,7 @@ class GameObject(pygame.sprite.Sprite):
         
     @property
     def _tile_pos(self):
+        """Return the tile that corresponds to this object's position."""
         return utils.Point(self.pos.x / MAP_TILE_WIDTH, 
                            self.pos.y / MAP_TILE_HEIGHT)
         
@@ -60,23 +60,17 @@ class GameObject(pygame.sprite.Sprite):
                 yield None
                 yield None
 
-    def update(self, *args):
-            """Run the current animation."""
-            self.animation.next()                
+    def update(self, *args): # TODO use/remove *args
+        """Run the current animation."""
+        self.animation.next()                
 
 class Person(GameObject):
     """Class for one person."""
 
-    def __init__(self, position, image, color = None, rect = None, radius = 8):
+    def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
         self.goal = None
-        if color != None:
-            self.color = color
-        else:
-            self.color = (randint(0, 255), randint(0, 255), randint(0, 255))
 
-        self.radius = radius
-        
     def __repr__(self):
         return self.pos.__repr__()
         
@@ -90,15 +84,14 @@ class Person(GameObject):
 class Player(Person):
     """Player object."""
 
-    def __init__(self, position, image, rect = None, radius = 8):
-        Person.__init__(self, position, image, (255, 0, 0), rect, radius)
+    def __init__(self, position, image, rect):
+        Person.__init__(self, position, image, rect)
         self.direction = 2
         self.animation = None
         self.image = self.frames[self.direction][0]
 
     def walk_animation(self):
         """Animation for the player walking."""
-
         # This animation is hardcoded for 4 frames and 16x24 map tiles
         for frame in range(4):
             self.image = self.frames[self.direction][frame]
@@ -109,9 +102,8 @@ class Player(Person):
             yield None
             yield None'''
             
-    def update(self, *args):
+    def update(self, *args): # TODO use/remove *args
         """Run the current animation or just stand there if no animation set."""
-
         if self.animation is None:
             self.image = self.frames[self.direction][0]
         else:
@@ -124,8 +116,8 @@ class Player(Person):
 class Cop(Person):
     """Cop object."""
 
-    def __init__(self, pos, image):
-        Person.__init__(self, pos, image, (0, 0, 255))
+    def __init__(self, pos, image, rect):
+        Person.__init__(self, pos, image, rect)
         
     def update(self):
         # Logic here!
