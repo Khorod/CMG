@@ -7,11 +7,13 @@ import objects
 import world
 
 
+DEBUG = False
 # Define some colors
 black    = ( 10,  10,  10)
 white    = (255, 255, 255)
 green    = (  0, 255,   0)
 red      = (230,  10,   0)
+blue     = (0,     0, 255)
  
 pygame.init()
   
@@ -44,6 +46,8 @@ while done == False:
  
     # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
     
+    
+    
     background, overlay_dict = level.render()
     overlays = pygame.sprite.RenderUpdates()
     for (x, y), image in overlay_dict.iteritems():
@@ -73,7 +77,7 @@ while done == False:
         elif pressed[pygame.K_d]:
             level.walk_animation(1)
                 
-    level.move_player(2*dx, 2*dy)
+    level.move_player(dx, dy)
     level.player.update()
     
     dirty = level.game_objects.draw(screen)
@@ -83,6 +87,10 @@ while done == False:
     # Get mouse position
     click = pygame.mouse.get_pressed()
 
+    if DEBUG:
+        for obj in level.game_objects:
+            pygame.draw.rect(screen, red, obj.real_rect, 2)
+            pygame.draw.circle(screen, blue, obj.pos, 2)
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
      
     # Limit to 20 frames per second
