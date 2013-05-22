@@ -18,18 +18,18 @@ name = wall
 tile = 0, 3
 block = true
 sprite = ../img/wall.png
-rect = 0, 0, 32, 16
+rect = 0, 16, 32, 16
 
 [b]
 name = crate
 tile = 0, 3
 block = true
 sprite = ../img/crate.png
-rect = 0, 0, 32, 16
+rect = 0, 16, 32, 16
 
 [p]
 name = player
 tile = 0, 3
 block = true
 sprite = ../img/player.png
-rect = 0, 0, 32, 16
+rect = 8, 28, 16, 4
