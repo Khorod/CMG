@@ -4,7 +4,7 @@ import astar
 import ConfigParser
 import objects
 
-MAP_TILE_WIDTH = 32
+MAP_TILE_WIDTH = 32 # TODO read from ini file
 MAP_TILE_HEIGHT = 16
 
 class TileCache:
@@ -132,9 +132,13 @@ class Level(object):
     def collision(self, entity):
         """Check for collision."""
         self.game_objects.remove(entity) # do not detect collision with itself
-        collided = pygame.sprite.spritecollideany(entity, self.game_objects)
+        collided = pygame.sprite.spritecollideany(entity, self.game_objects,
+                                                  self.real_rect_collision)
         self.game_objects.add(entity)
         return collided
+        
+    def real_rect_collision(self, sprite1, sprite2):
+        return pygame.Rect.colliderect(sprite1.real_rect, sprite2.real_rect)
 
     def update_objects(self):
         """Perform the actions of each object."""
