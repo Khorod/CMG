@@ -2,6 +2,7 @@
 
 import pygame
 from random import randint
+from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 
 # Own imports
 import utils
@@ -9,42 +10,45 @@ import utils
 class GameObject(pygame.sprite.Sprite):
     """Abstract superclass for all objects in the game."""
     world = None
-    def __init__(self, position, frames, rect = None):
+    def __init__(self, position, frames, real_rect = None):
         super(GameObject, self).__init__()
         self.image = frames[0][0]
-        if rect == None:
-            self.rect = self.image.get_rect()
-            print self.rect
+        self.rect = self.image.get_rect()
+        if real_rect == None:
+            self.real_rect = self.image.get_rect()
         else:
-            self.rect = rect
+            self.real_rect = real_rect
+
+        self._offset = real_rect.topleft
         self.pos = utils.Point(position[0], position[1])
         if frames:
             self.frames = frames
+
         self.animation = self.stand_animation()
         
     @property
     def _tile_pos(self):
-        return utils.Point(self.pos.x / 24, self.pos.y / 16)
+        return utils.Point(self.pos.x / MAP_TILE_WIDTH, 
+                           self.pos.y / MAP_TILE_HEIGHT)
         
     def _get_pos(self):
         """Check the current position of the sprite on the map."""
-        x, y = self.rect.center
-        return utils.Point(x, y)
+        return self._pos
 
-    def _set_pos(self, pos):
+    def _set_pos(self, position):
         """Set the position and depth of the sprite on the map."""
+        self._pos = utils.Point(position[0], position[1])
+        self.rect.x = self._pos[0]
+        self.rect.y = self._pos[1]
+        self.real_rect.x = self._pos[0] + self._offset[0]
+        self.real_rect.y = self._pos[1] + self._offset[1]
+        self.depth = self.real_rect.midbottom[1]
 
-        # TODO replace hardcoded 24 and 16
-        self.rect.midbottom = pos.x + 12, pos.y + 16
-        self.depth = self.rect.midbottom[1]
-
-    pos = property(_get_pos, _set_pos)
+    pos = property(_get_pos, _set_pos) # magic
 
     def move(self, dx, dy):
         """Change the position of the sprite on screen."""
-
-        self.rect.move_ip(dx, dy)
-        self.depth = self.rect.midbottom[1]  
+        self.pos += (dx, dy)
         
     def stand_animation(self):
         """The default animation."""
@@ -98,12 +102,12 @@ class Player(Person):
         # This animation is hardcoded for 4 frames and 16x24 map tiles
         for frame in range(4):
             self.image = self.frames[self.direction][frame]
+            '''yield None
             yield None
             yield None
             yield None
             yield None
-            yield None
-            yield None
+            yield None'''
             
     def update(self, *args):
         """Run the current animation or just stand there if no animation set."""
