@@ -100,9 +100,9 @@ class Level(object):
                 if not self.is_wall(x, y) and 'sprite' in self.key[c]:
                     self.items[(x, y)] = self.key[c]
                     
-    def walk_animation(self,d):
+    def walk_animation(self, direction):
         """Start walking in specified direction."""
-        self.player.direction = d
+        self.player.direction = direction
         self.player.animation = self.player.walk_animation()
 
     def move_player(self, dx, dy):
@@ -138,6 +138,8 @@ class Level(object):
         return collided
         
     def real_rect_collision(self, sprite1, sprite2):
+        """Detect collision between the real_rect variables of the given 
+        sprites."""
         return pygame.Rect.colliderect(sprite1.real_rect, sprite2.real_rect)
 
     def update_objects(self):
