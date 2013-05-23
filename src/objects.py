@@ -24,7 +24,7 @@ class GameObject(pygame.sprite.Sprite):
             self.frames = frames
 
         self.animation = self.stand_animation()
-        self.speed = 2
+        self.speed = 1
         self.animation_counter = 0
         self.animation_speed = 8 #higher is slower
     @property
@@ -99,6 +99,8 @@ class Person(GameObject):
         self.path = [(500,150),(600,150)]#[(0,0), (1100,5), (1100, 300), (0, 300), (0,0)]
         #idle or not
         self.idle = False
+        self.creeper_comfort_zone = 100
+        self.person_comfort_zone = 30
     def __repr__(self):
         return self.pos.__repr__()
         
@@ -114,14 +116,17 @@ class Person(GameObject):
             print x
             self.move(dx, dy)
     
-    def set_random_goal(self):
+    def set_random_goal(self, level):
         '''set random goal within 100 pixels around itself, looks a lot better than walk_random'''
-        randomx = randint(-100, 100)
-        randomy = randint(-100, 100)
+        randomx = randint(-500, 500)
+        randomy = randint(-500, 500)
         new_x = self.pos[0] + randomx
         new_y = self.pos[1] + randomy
         new_x, new_y = self.boundcheck(new_x, new_y)
         self.goal = (new_x, new_y)
+        if level.is_wall(int(new_x), int(new_y)):
+            self.goal = None
+            
 
         
     def walk_to_place(self, level, goal):
@@ -143,6 +148,7 @@ class Person(GameObject):
         dy = self.speed/total_length * DY
         self.change_direction(dx, dy)
         self.collision_move(level,dx, dy)
+
         
     def change_direction(self, dx, dy):
         ''' change self.direction depending on .., well, direction!'''
@@ -183,7 +189,7 @@ class Person(GameObject):
         if self.goal == None and self.path:
             self.goal = self.path[0] 
             self.path.remove(self.path[0])
-        elif self.goal is not None and abs(self.distance(self.pos, self.goal)) < 3:
+        elif self.goal is not None and abs(self.distance(self.pos, self.goal)) < 20:
             if self.path:
                 self.goal = self.path[0]
                 self.path.remove(self.path[0])
@@ -200,9 +206,26 @@ class Person(GameObject):
         y = y if y < 320 else 320 -10
         return x, y
         
-    def update(self, level):
-        if self.distance(self.pos, level.player.pos) < 100:
+    def walk_from_player(self,level):
+        if self.distance(self.pos, level.player.pos) < self.creeper_comfort_zone:
             self.walk_away_from_place(level, level.player.pos)
+            return True
+        else:
+            return False
+            
+    def walk_from_person(self, level):
+        for obj in level.game_objects:
+            if self is not obj:
+                if self.distance(self.pos, obj.pos) < self.person_comfort_zone:
+                    self.walk_away_from_place(level, obj.pos)
+                    return True
+        return False     
+        
+    def update(self, level):
+        if self.walk_from_player(level):
+            pass
+        elif self.walk_from_person(level):
+            pass
         elif not self.idle:
             if self.animation is None:
                 self.animation = self.walk_animation()
@@ -210,8 +233,7 @@ class Person(GameObject):
             if self.goal is not None:
                 self.walk_to_place(level,self.goal)
             else:
-                self.set_random_goal()
-                   
+                self.set_random_goal(level)
         if self.animation is None:
             self.image = self.frames[self.direction][0]
         else:

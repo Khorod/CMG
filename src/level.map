@@ -37,7 +37,6 @@ rect = 8, 28, 16, 4
 [x]
 name = person
 tile = 0,3
-block = true
 sprite = ../img/player_old.png
 rect = 3, 28, 16, 6
 
