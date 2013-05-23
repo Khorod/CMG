@@ -62,26 +62,30 @@ while done == False:
     
     level.game_objects.clear(screen, background)
     level.update_objects()
+    #if level.player.animation is None:
+    # Handle player movement
+    pressed = pygame.key.get_pressed()
 
-    if level.player.animation is None:
-        # Handle player movement
-        pressed = pygame.key.get_pressed()
+    dx = pressed[pygame.K_d] - pressed[pygame.K_a]
+    dy = pressed[pygame.K_s] - pressed[pygame.K_w]
+    
 
-        dx = pressed[pygame.K_d] - pressed[pygame.K_a]
-        dy = pressed[pygame.K_s] - pressed[pygame.K_w]
-        
-
-        if pressed[pygame.K_w]:
-            level.walk_animation(0)
-        elif pressed[pygame.K_s]:
-            level.walk_animation(2)
-        elif pressed[pygame.K_a]:
-            level.walk_animation(3)
-        elif pressed[pygame.K_d]:
-            level.walk_animation(1)
-                
-    level.move_player(dx, dy)
-    level.player.update()
+    if pressed[pygame.K_w]:
+        level.walk_animation(0)
+    elif pressed[pygame.K_s]:
+        level.walk_animation(2)
+    elif pressed[pygame.K_a]:
+        level.walk_animation(3)
+    elif pressed[pygame.K_d]:
+        level.walk_animation(1)
+    
+    if dx is 0 and dy is 0: 
+        level.player.animation = None
+    if dx is not 0 or dy is not 0: 
+        if level.player.animation is None:
+            level.player.animation = level.player.walk_animation()#stand_animation(level.player.direction)
+    level.move_player(dx*2, dy*2)
+    level.player.update(level)
     
     dirty = level.game_objects.draw(screen)
     overlays.draw(screen)

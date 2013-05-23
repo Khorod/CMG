@@ -105,7 +105,7 @@ class Level(object):
     def walk_animation(self, direction):
         """Start walking in specified direction."""
         self.player.direction = direction
-        self.player.animation = self.player.walk_animation()
+        #self.player.animation = self.player.walk_animation()
 
     def move_player(self, dx, dy):
         """Move the player if this does not cause a collision. If there is a
@@ -147,7 +147,7 @@ class Level(object):
     def update_objects(self):
         """Perform the actions of each object."""
         for obj in self.game_objects:
-            obj.update()
+            obj.update(self)
         
     def get_tile(self, x, y):
         """Tell what's at the specified position of the map."""

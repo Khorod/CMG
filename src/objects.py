@@ -25,6 +25,8 @@ class GameObject(pygame.sprite.Sprite):
 
         self.animation = self.stand_animation()
         self.speed = 2
+        self.animation_counter = 0
+        self.animation_speed = 8 #higher is slower
     @property
     def _tile_pos(self):
         """Return the tile that corresponds to this object's position."""
@@ -50,6 +52,17 @@ class GameObject(pygame.sprite.Sprite):
         """Change the position of the sprite on screen."""
         self.pos += (dx, dy)
         
+    def collision_move(self, level,dx, dy):
+        """Change the position of the sprite on screen."""
+        self.pos += (dx, dy)
+        if not level.valid_position(self):
+            self.pos +=(-dx, 0)
+            if not level.valid_position(self):
+                self.pos += (dx, -dy)
+                if not level.valid_position(self):
+                    self.pos += (-dx, 0)
+                    
+                    
     def stand_animation(self, direction = 0):
         """The default animation."""
 
@@ -59,10 +72,20 @@ class GameObject(pygame.sprite.Sprite):
                 self.image = frame
                 yield None
                 yield None
-
+    
+    def animation_speed_check(self):
+        if self.animation_counter < self.animation_speed:
+            self.animation_counter += 1
+            return False
+        else:
+            self.animation_counter = 0
+            return True
+            
     def update(self, *args): # TODO use/remove *args
         """Run the current animation."""
-        self.animation.next()                
+        
+        if self.animation_speed_check():
+            self.animation.next()                
 
 class Person(GameObject):
     """Class for one person."""
@@ -99,18 +122,27 @@ class Person(GameObject):
         new_y = self.pos[1] + randomy
         new_x, new_y = self.boundcheck(new_x, new_y)
         self.goal = (new_x, new_y)
-            
 
         
-    def walk_to_goal(self):
-        '''walk to goal in straight line, depending on self.speed'''
-        DX = self.pos[0] - self.goal[0]
-        DY = self.pos[1] - self.goal[1]
+    def walk_to_place(self, level, goal):
+        '''walk to goal  in straight line, depending on self.speed'''
+        DX = self.pos[0] - goal[0]
+        DY = self.pos[1] - goal[1]
         total_length = (DX**2 + DY**2)**0.5
         dx = -1*self.speed/total_length * DX
         dy = -1*self.speed/total_length * DY
         self.change_direction(dx, dy)
-        self.move(dx, dy)
+        self.collision_move(level,dx, dy)
+
+    def walk_away_from_place(self, level, goal):
+        '''walk away from place in straight line, depending on self.speed'''
+        DX = self.pos[0] - goal[0]
+        DY = self.pos[1] - goal[1]
+        total_length = (DX**2 + DY**2)**0.5
+        dx = self.speed/total_length * DX
+        dy = self.speed/total_length * DY
+        self.change_direction(dx, dy)
+        self.collision_move(level,dx, dy)
         
     def change_direction(self, dx, dy):
         ''' change self.direction depending on .., well, direction!'''
@@ -130,10 +162,9 @@ class Person(GameObject):
             """Animation for the person walking."""
             # This animation is hardcoded for 4 frames and 16x24 map tiles
             for frame in range(4):
-                self.image = self.frames[self.direction][frame]
+                self.image = self.frames[self.direction][frame]  
                 yield None
-                yield None    
-   
+                
     def __repr__(self):
         return self.pos.__repr__()
        
@@ -169,25 +200,24 @@ class Person(GameObject):
         y = y if y < 320 else 320 -10
         return x, y
         
-    def update(self):
-        if self.idle:
-            ''''if self.goal == None:
-                self.walk_random()
-            else:'''
-            self.animation = self.walk_animation()
+    def update(self, level):
+        if self.distance(self.pos, level.player.pos) < 100:
+            self.walk_away_from_place(level, level.player.pos)
+        elif not self.idle:
+            if self.animation is None:
+                self.animation = self.walk_animation()
             self.get_goal_from_path()
             if self.goal is not None:
-                self.walk_to_goal()
+                self.walk_to_place(level,self.goal)
             else:
                 self.set_random_goal()
-        else:
-            self.animation = self.stand_animation(self.direction)
-            
+                   
         if self.animation is None:
             self.image = self.frames[self.direction][0]
         else:
-            try:
-                self.animation.next()
+            try:                
+                if self.animation_speed_check():
+                    self.animation.next()
             except StopIteration:
                 self.animation = None
                 
@@ -196,15 +226,16 @@ class Player(Person):
 
     def __init__(self, position, image, rect):
         Person.__init__(self, position, image, rect)
-
+        self.animation = None
       
-    def update(self, *args): # TODO use/remove *args
+    def update(self, level,*args): # TODO use/remove *args
         """Run the current animation or just stand there if no animation set."""
         if self.animation is None:
             self.image = self.frames[self.direction][0]
         else:
             try:
-                self.animation.next()
+                if self.animation_speed_check():
+                    self.animation.next()
             except StopIteration:
                 self.animation = None
 
@@ -215,6 +246,6 @@ class Cop(Person):
     def __init__(self, pos, image, rect):
         Person.__init__(self, pos, image, rect)
         
-    def update(self):
+    def update(self, level):
         # Logic here!
         pass
