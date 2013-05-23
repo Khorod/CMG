@@ -73,6 +73,8 @@ class Level(object):
             if tile["name"] == "player": # Create a player
                 self.player = objects.Player(position, sprite, rect)
                 entity = self.player
+            elif tile["name"] == "person": # Create a player
+                entity  = objects.Person(position, sprite, rect)
             else:
                 entity = objects.GameObject(position, sprite, rect)
                 

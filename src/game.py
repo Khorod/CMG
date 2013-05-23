@@ -14,6 +14,9 @@ white    = (255, 255, 255)
 green    = (  0, 255,   0)
 red      = (230,  10,   0)
 blue     = (0,     0, 255)
+
+screen_width = 1120
+screen_height = 320
  
 pygame.init()
   
@@ -22,7 +25,7 @@ pygame.display.set_caption("My Game")
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-screen_size = (1120, 320)
+screen_size = (screen_width, screen_height)
 screen = pygame.display.set_mode(screen_size)
 
 level = world.Level(screen_size, 'level.map')
@@ -59,7 +62,7 @@ while done == False:
     
     level.game_objects.clear(screen, background)
     level.update_objects()
-    
+
     if level.player.animation is None:
         # Handle player movement
         pressed = pygame.key.get_pressed()
