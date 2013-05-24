@@ -38,7 +38,7 @@ except ValueError:
 F, H, NUM, G, POS, OPEN, VALID, PARENT = xrange(8)
 
 
-def astar(start_pos, neighbors, goal, start_g, cost, heuristic, limit=maxint,
+def astar(start_pos, neighbors, goal, start_g, cost, heuristic, limit=10,
           debug=None):
 
     """Find the shortest path from start to goal.

@@ -1,5 +1,5 @@
 """By Michael Cabot, Steven Laan, Richard Rozeboom"""
-
+import math
 import pygame
 from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 from random import randint
@@ -24,14 +24,14 @@ class GameObject(pygame.sprite.Sprite):
             self.frames = frames
 
         self.animation = self.stand_animation()
-        self.speed = 1
+        self.speed = 2
         self.animation_counter = 0
         self.animation_speed = 8 #higher is slower
     @property
     def _tile_pos(self):
         """Return the tile that corresponds to this object's position."""
-        return utils.Point(self.pos.x / MAP_TILE_WIDTH, 
-                           self.pos.y / MAP_TILE_HEIGHT)
+        return utils.Point(int(math.ceil(self.pos.x / MAP_TILE_WIDTH)), 
+                           int(math.ceil(self.pos.y / MAP_TILE_HEIGHT)))
         
     def _get_pos(self):
         """Check the current position of the sprite on the map."""
@@ -91,16 +91,17 @@ class Person(GameObject):
     """Class for one person."""
     def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
+        self.final_goal = (5,5)
         self.goal = None
         self.direction = 2
         self.animation = None
         self.image = self.frames[self.direction][0]
         #path to follow
-        self.path = [(500,150),(600,150)]#[(0,0), (1100,5), (1100, 300), (0, 300), (0,0)]
+        self.path = None#[(300,0),(500,150),(600,150)]#[(0,0), (1100,5), (1100, 300), (0, 300), (0,0)]
         #idle or not
         self.idle = False
         self.creeper_comfort_zone = 100
-        self.person_comfort_zone = 30
+        self.person_comfort_zone = 2
     def __repr__(self):
         return self.pos.__repr__()
         
@@ -118,8 +119,8 @@ class Person(GameObject):
     
     def set_random_goal(self, level):
         '''set random goal within 100 pixels around itself, looks a lot better than walk_random'''
-        randomx = randint(-500, 500)
-        randomy = randint(-500, 500)
+        randomx = randint(-50, 50)
+        randomy = randint(-50, 50)
         new_x = self.pos[0] + randomx
         new_y = self.pos[1] + randomy
         new_x, new_y = self.boundcheck(new_x, new_y)
@@ -186,12 +187,12 @@ class Person(GameObject):
         
     def get_goal_from_path(self):
         '''gets goal from self.path, removes entry from path when it is entered as goal'''
-        if self.goal == None and self.path:
-            self.goal = self.path[0] 
+        if not self.goal and self.path:
+            self.goal = (self.path[0][0]*MAP_TILE_WIDTH , self.path[0][1]*MAP_TILE_HEIGHT) 
             self.path.remove(self.path[0])
-        elif self.goal is not None and abs(self.distance(self.pos, self.goal)) < 20:
+        elif self.goal is not None and abs(self.distance(self.pos, self.goal)) < 30:
             if self.path:
-                self.goal = self.path[0]
+                self.goal = (self.path[0][0]*MAP_TILE_WIDTH , self.path[0][1]*MAP_TILE_HEIGHT) 
                 self.path.remove(self.path[0])
             else:
                 self.goal = None
@@ -233,7 +234,17 @@ class Person(GameObject):
             if self.goal is not None:
                 self.walk_to_place(level,self.goal)
             else:
-                self.set_random_goal(level)
+                pass#self.set_random_goal(level)
+                
+        #if not self.path and not self.goal:
+        #self.path = level.plan_path(utils.Point(int(self.pos[0]),int(self.pos[1])), utils.Point(self.final_goal[0],self.final_goal[1]))
+        if self.final_goal:
+            self.path = level.plan_path(self._tile_pos, utils.Point(self.final_goal[0]/MAP_TILE_WIDTH,self.final_goal[1]/MAP_TILE_HEIGHT) )       
+        
+        if self.final_goal:
+            if self.distance(self.pos, self.final_goal) < 30:
+                self.final_goal = None
+        
         if self.animation is None:
             self.image = self.frames[self.direction][0]
         else:
