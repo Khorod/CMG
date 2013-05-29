@@ -73,8 +73,6 @@ class Level(object):
             if tile["name"] == "player": # Create a player
                 self.player = objects.Player(position, sprite, rect)
                 entity = self.player
-            elif tile["name"] == "person": # Create a player
-                entity  = objects.Person(position, sprite, rect)
             else:
                 entity = objects.GameObject(position, sprite, rect)
                 
@@ -105,7 +103,7 @@ class Level(object):
     def walk_animation(self, direction):
         """Start walking in specified direction."""
         self.player.direction = direction
-        #self.player.animation = self.player.walk_animation()
+        self.player.animation = self.player.walk_animation()
 
     def move_player(self, dx, dy):
         """Move the player if this does not cause a collision. If there is a
@@ -147,7 +145,7 @@ class Level(object):
     def update_objects(self):
         """Perform the actions of each object."""
         for obj in self.game_objects:
-            obj.update(self)
+            obj.update()
         
     def get_tile(self, x, y):
         """Tell what's at the specified position of the map."""
@@ -173,6 +171,7 @@ class Level(object):
 
     def is_blocking(self, x, y):
         """Is this place blocking movement?"""
+
         if not 0 <= x < self.width or not 0 <= y < self.height:
             return True
         return self.get_bool(x, y, 'block')
@@ -192,19 +191,19 @@ class Level(object):
         """Yield the neighbouring positions."""
 
         if pos.x > 0:
-            if not self.is_wall(pos.x - 1, pos.y) and not self.is_blocking(pos.x - 1, pos.y):
+            if not self.is_wall(pos.x - 1, pos.y):
                 yield pos - (1, 0)
 
         if pos.x < self.width - 1:
-            if not self.is_wall(pos.x + 1, pos.y) and not self.is_blocking(pos.x + 1, pos.y):
+            if not self.is_wall(pos.x + 1, pos.y):
                 yield pos + (1, 0)
         
         if pos.y > 0:
-            if not self.is_wall(pos.x, pos.y - 1) and not self.is_blocking(pos.x, pos.y - 1):
+            if not self.is_wall(pos.x, pos.y - 1):
                 yield pos - (0, 1)
 
         if pos.y < self.height - 1:
-            if not self.is_wall(pos.x, pos.y + 1) and not self.is_blocking(pos.x, pos.y + 1):
+            if not self.is_wall(pos.x, pos.y + 1):
                 yield pos + (0, 1)
     
     def place_free(self, game_object, pos):
