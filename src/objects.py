@@ -30,8 +30,8 @@ class GameObject(pygame.sprite.Sprite):
     @property
     def _tile_pos(self):
         """Return the tile that corresponds to this object's position."""
-        return utils.Point(int(math.ceil(self.pos.x / MAP_TILE_WIDTH)), 
-                           int(math.ceil(self.pos.y / MAP_TILE_HEIGHT)))
+        return utils.Point(int(self.pos.x / MAP_TILE_WIDTH), 
+                           int(self.pos.y / MAP_TILE_HEIGHT))
         
     def _get_pos(self):
         """Check the current position of the sprite on the map."""
@@ -174,19 +174,12 @@ class Person(GameObject):
                 self.image = self.frames[self.direction][frame]  
                 yield None
 
-    def distance(self, pos1, pos2):
-        '''returns distance of 2 positions'''
-        DX = pos1[0] - pos2[0]
-        DY = pos1[1] - pos2[1]
-        total_length = (DX**2 + DY**2)**0.5
-        return total_length
-        
     def get_goal_from_path(self):
         '''gets goal from self.path, removes entry from path when it is entered as goal'''
         if not self.goal and self.path:
             self.goal = (self.path[0][0]*MAP_TILE_WIDTH , self.path[0][1]*MAP_TILE_HEIGHT) 
             self.path.remove(self.path[0])
-        elif self.goal is not None and abs(self.distance(self.pos, self.goal)) < 30:
+        elif self.goal is not None and self.pos.dist(self.goal) < 30:
             if self.path:
                 self.goal = (self.path[0][0]*MAP_TILE_WIDTH , self.path[0][1]*MAP_TILE_HEIGHT) 
                 self.path.remove(self.path[0])
@@ -204,7 +197,7 @@ class Person(GameObject):
         return x, y
         
     def walk_from_player(self,level):
-        if self.distance(self.pos, level.player.pos) < self.creeper_comfort_zone:
+        if self.pos.dist(level.player.pos) < self.creeper_comfort_zone:
             self.walk_away_from_place(level, level.player.pos)
             return True
         else:
@@ -213,7 +206,7 @@ class Person(GameObject):
     def walk_from_person(self, level):
         for obj in level.game_objects:
             if self is not obj:
-                if self.distance(self.pos, obj.pos) < self.person_comfort_zone:
+                if self.pos.dist(obj.pos) < self.person_comfort_zone:
                     self.walk_away_from_place(level, obj.pos)
                     return True
         return False     
@@ -238,7 +231,7 @@ class Person(GameObject):
             self.path = level.plan_path(self._tile_pos, utils.Point(self.final_goal[0]/MAP_TILE_WIDTH,self.final_goal[1]/MAP_TILE_HEIGHT) )       
         
         if self.final_goal:
-            if self.distance(self.pos, self.final_goal) < 30:
+            if self.pos.dist(self.final_goal) < 30:
                 self.final_goal = None
         
         if self.animation is None:
