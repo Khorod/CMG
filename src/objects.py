@@ -85,7 +85,14 @@ class GameObject(pygame.sprite.Sprite):
         """Run the current animation."""
         
         if self.animation_speed_check():
-            self.animation.next()                
+            self.animation.next()
+
+    def __repr__(self):
+        return '%s(%s, %s)' % (self.__class__.__name__, 
+                               self.pos[0], self.pos[1])
+        
+    def __str__(self):
+        return self.__repr__()
 
 class Person(GameObject):
     """Class for one person."""
@@ -102,11 +109,6 @@ class Person(GameObject):
         self.idle = False
         self.creeper_comfort_zone = 100
         self.person_comfort_zone = 2
-    def __repr__(self):
-        return self.pos.__repr__()
-        
-    def __str__(self):
-        return self.__repr__()
 
     def walk_random(self):
         '''walks random.. but looks more like vibrating'''
@@ -171,13 +173,7 @@ class Person(GameObject):
             for frame in range(4):
                 self.image = self.frames[self.direction][frame]  
                 yield None
-                
-    def __repr__(self):
-        return self.pos.__repr__()
-       
-    def __str__(self):
-        return self.__repr__()
-    
+
     def distance(self, pos1, pos2):
         '''returns distance of 2 positions'''
         DX = pos1[0] - pos2[0]
