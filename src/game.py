@@ -109,7 +109,7 @@ while done == False:
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
      
     # Limit to 20 frames per second
-    clock.tick(2)
+    clock.tick(60)
  
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
