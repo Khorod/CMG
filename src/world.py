@@ -82,10 +82,6 @@ class Level(object):
                 entity = self.player
             elif tile["name"] == "person": # Create a player
                 entity  = objects.Person(position, sprite, rect)
-            #elif tile["name"] == "wall": # Found a wall
-            #    rect.move_ip(position[0], position[1])
-            #    self.wall_rects.append(rect)
-            #    continue
             else:
                 entity = objects.GameObject(position, sprite, rect)
 
@@ -130,7 +126,7 @@ class Level(object):
     def walk_animation(self, direction):
         """Start walking in specified direction."""
         self.player.direction = direction
-        #self.player.animation = self.player.walk_animation()
+        self.player.animation = self.player.walk_animation()
 
     def move_player(self, dx, dy):
         """Move the player if this does not cause a collision. If there is a
@@ -199,6 +195,7 @@ class Level(object):
 
     def is_blocking(self, x, y):
         """Is this place blocking movement?"""
+
         if not 0 <= x < self.width or not 0 <= y < self.height:
             return True
         return self.get_bool(x, y, 'block')

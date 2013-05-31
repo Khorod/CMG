@@ -16,9 +16,6 @@ green    = (  0, 255,   0)
 red      = (230,  10,   0)
 blue     = (0,     0, 255)
 
-screen_width = 1120
-screen_height = 320
-
 pygame.init()
 
 pygame.display.set_caption("My Game")
@@ -26,7 +23,7 @@ pygame.display.set_caption("My Game")
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
 
-screen_size = (screen_width, screen_height)
+screen_size = (1120, 320)
 screen = pygame.display.set_mode(screen_size)
 
 level = world.Level(screen_size, 'level_wonly.map')

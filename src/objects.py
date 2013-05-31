@@ -7,7 +7,6 @@ from random import randint
 # Own imports
 import utils
 
-
 class GameObject(pygame.sprite.Sprite):
     """Abstract superclass for all objects in the game."""
     world = None
@@ -71,7 +70,7 @@ class GameObject(pygame.sprite.Sprite):
 
         while True:
             # Change to next frame every two ticks
-            for frame in self.frames[direction]:
+            for frame in self.frames[0]:
                 self.image = frame
                 yield None
                 yield None
@@ -99,6 +98,7 @@ class GameObject(pygame.sprite.Sprite):
 
 class Person(GameObject):
     """Class for one person."""
+
     def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
         self.final_goal = (40, 128)
@@ -173,6 +173,7 @@ class Player(Person):
 
     def __init__(self, position, image, rect):
         Person.__init__(self, position, image, rect)
+        self.direction = 2
         self.animation = None
 
     def update(self, level):
@@ -181,8 +182,7 @@ class Player(Person):
             self.image = self.frames[self.direction][0]
         else:
             try:
-                if self.animation_speed_check():
-                    self.animation.next()
+                self.animation.next()
             except StopIteration:
                 self.animation = None
 
