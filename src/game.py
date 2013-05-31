@@ -56,7 +56,6 @@ while done == False:
         overlay.rect = image.get_rect().move(x * world.MAP_TILE_WIDTH, y * world.MAP_TILE_HEIGHT - world.MAP_TILE_HEIGHT)
 
     screen.blit(background, (0, 0))
-    overlays.draw(screen)
 
     level.game_objects.clear(screen, background)
     level.update_objects()
