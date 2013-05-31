@@ -93,12 +93,6 @@ class Point(tuple):
             return (diff[0]**2 + diff[1]**2)**0.5
         else:
             return NotImplementedError()
-            
-    def dot(self, other):
-        if isinstance(other, Point) or isinstance(other, tuple):
-            return Point(self.x * other[0], self.y * other[1])
-        else:
-            return NotImplementedError()
 
     def dot(self, other):
         if isinstance(other, Point) or isinstance(other, tuple):
