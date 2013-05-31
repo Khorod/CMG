@@ -24,9 +24,12 @@ class GameObject(pygame.sprite.Sprite):
             self.frames = frames
 
         self.animation = self.stand_animation()
+        self.speed = 2
+        self.animation_counter = 0
+        self.animation_speed = 8 #higher is slower
 
     @property
-    def _tile_pos(self):
+    def tile_pos(self):
         """Return the tile that corresponds to this object's position."""
         return utils.Point(int(self.pos.x / MAP_TILE_WIDTH),
                            int(self.pos.y / MAP_TILE_HEIGHT))
@@ -71,8 +74,17 @@ class GameObject(pygame.sprite.Sprite):
                 yield None
                 yield None
 
+    def animation_speed_check(self):
+        if self.animation_counter < self.animation_speed:
+            self.animation_counter += 1
+            return False
+        else:
+            self.animation_counter = 0
+            return True
+
     def update(self, *args): # TODO use/remove *args
         """Run the current animation."""
+
         if self.animation_speed_check():
             self.animation.next()
 
@@ -218,7 +230,8 @@ class Person(GameObject):
         #if not self.path and not self.goal:
         #self.path = level.plan_path(utils.Point(int(self.pos[0]),int(self.pos[1])), utils.Point(self.final_goal[0],self.final_goal[1]))
         if self.final_goal:
-            self.path = level.plan_path(self._tile_pos, utils.Point(self.final_goal[0]/MAP_TILE_WIDTH,self.final_goal[1]/MAP_TILE_HEIGHT) )
+            self.path = level.plan_path(self.tile_pos, utils.Point(self.final_goal[0]/MAP_TILE_WIDTH,self.final_goal[1]/MAP_TILE_HEIGHT) )
+            print self.path
 
         if self.final_goal:
             if self.pos.dist(self.final_goal) < 30:
@@ -258,6 +271,6 @@ class Cop(Person):
     def __init__(self, pos, image, rect):
         Person.__init__(self, pos, image, rect)
 
-    def update(self):
+    def update(self, level):
         # Logic here!
         pass

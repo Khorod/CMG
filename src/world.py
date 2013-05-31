@@ -3,9 +3,11 @@ import pygame
 import astar
 import ConfigParser
 import objects
+import utils
 
 MAP_TILE_WIDTH = 32 # TODO read from ini file
 MAP_TILE_HEIGHT = 16
+MAP_TILE_SIZE = (MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
 
 class TileCache:
     """Load the tilesets lazily into global cache"""
@@ -60,11 +62,13 @@ class Level(object):
 
     def __init__(self, screen_size, filename="level.map"):
         self.screen_size = screen_size
+        self.wall_rects = []
         self.load_file(filename)
-        sprite_cache = TileCache(32, 32)
+        sprite_cache = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
         self.game_objects = SortedUpdates()
+
         for tile_pos, tile in self.items.iteritems():
-            position = (tile_pos[0] * MAP_TILE_WIDTH, 
+            position = (tile_pos[0] * MAP_TILE_WIDTH,
                         tile_pos[1] * MAP_TILE_HEIGHT)
             sprite = sprite_cache[tile["sprite"]]
             parsed_rect = [int(v) for v in tile["rect"].split(', ')]
@@ -73,19 +77,28 @@ class Level(object):
             if tile["name"] == "player": # Create a player
                 self.player = objects.Player(position, sprite, rect)
                 entity = self.player
+            elif tile["name"] == "person": # Create a player
+                entity  = objects.Person(position, sprite, rect)
+            #elif tile["name"] == "wall": # Found a wall
+            #    rect.move_ip(position[0], position[1])
+            #    self.wall_rects.append(rect)
+            #    continue
             else:
                 entity = objects.GameObject(position, sprite, rect)
-                
+
             self.game_objects.add(entity)
+
+        self.wall_rects = utils.rects_merge(self.wall_rects)
+        self.nav_mesh = utils.make_nav_mesh(self.wall_rects)
 
     def load_file(self, filename):
         self.map = []
         self.key = {}
 
-        parser = ConfigParser.ConfigParser()
-        parser.read(filename)
-        self.tileset = parser.get("level", "tileset")
-        self.map = parser.get("level", "map").split("\n")
+	parser = ConfigParser.ConfigParser()
+	parser.read(filename)
+	self.tileset = parser.get("level", "tileset")
+	self.map = parser.get("level", "map").split("\n")
 
         for section in parser.sections():
             if len(section) == 1:
@@ -93,13 +106,24 @@ class Level(object):
                 self.key[section] = desc
         self.width = len(self.map[0])
         self.height = len(self.map)
-        
+
         self.items = {}
+        self.grid = []
         for y, line in enumerate(self.map):
+            gridline = []
             for x, c in enumerate(line):
-                if not self.is_wall(x, y) and 'sprite' in self.key[c]:
+                if self.is_wall(x, y):
+                    rect = pygame.Rect(x * MAP_TILE_WIDTH, y * MAP_TILE_HEIGHT, MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+                    self.wall_rects.append(rect)
+                    gridline.append(1)
+                else:
+                    gridline.append(0)
+
+                if 'sprite' in self.key[c]:
                     self.items[(x, y)] = self.key[c]
-                    
+
+            self.grid.append(gridline)
+
     def walk_animation(self, direction):
         """Start walking in specified direction."""
         self.player.direction = direction
@@ -116,7 +140,7 @@ class Level(object):
                 self.player.move(dx, -dy)
                 if not self.valid_position(self.player):
                     self.player.move(-dx, 0)
-                
+
 
     def valid_position(self, entity):
         """Check whether the entity's position is valid, i.e. it is inside the
@@ -136,17 +160,17 @@ class Level(object):
                                                   self.real_rect_collision)
         self.game_objects.add(entity)
         return collided
-        
+
     def real_rect_collision(self, sprite1, sprite2):
-        """Detect collision between the real_rect variables of the given 
+        """Detect collision between the real_rect variables of the given
         sprites."""
         return pygame.Rect.colliderect(sprite1.real_rect, sprite2.real_rect)
 
     def update_objects(self):
         """Perform the actions of each object."""
         for obj in self.game_objects:
-            obj.update()
-        
+            obj.update(self)
+
     def get_tile(self, x, y):
         """Tell what's at the specified position of the map."""
         try:
@@ -158,16 +182,14 @@ class Level(object):
         except KeyError:
             return {}
 
+    def is_wall(self, x, y):
+        return self.get_bool(x, y, 'wall')
+
     def get_bool(self, x, y, name):
         """Tell if the specified flag is set for position on the map."""
 
         value = self.get_tile(x, y).get(name)
         return value in (True, 1, 'true', 'yes', 'True', 'Yes', '1', 'on', 'On')
-
-    def is_wall(self, x, y):
-        """Is there a wall?"""
-
-        return self.get_bool(x, y, 'wall')
 
     def is_blocking(self, x, y):
         """Is this place blocking movement?"""
@@ -179,53 +201,14 @@ class Level(object):
     def plan_path(self, start, goal):
         """Return optimal path from start to goal."""
 
-        goal_func = lambda x: x == goal
-        heur_func = lambda x: goal.dist(x)
-        cost_func = lambda x, y: 1
-
-        path, _ = astar.astar(start, self.neighbors, goal_func, 0, 
-            cost_func, heur_func)
+        path = utils.find_path(start, goal, self.nav_mesh, self.grid, MAP_TILE_SIZE)
         return path
-
-    def neighbors(self, pos, wall = 1):
-        """Yield the neighbouring positions."""
-
-        if pos.x > 0:
-            if not self.is_wall(pos.x - 1, pos.y):
-                yield pos - (1, 0)
-
-        if pos.x < self.width - 1:
-            if not self.is_wall(pos.x + 1, pos.y):
-                yield pos + (1, 0)
-        
-        if pos.y > 0:
-            if not self.is_wall(pos.x, pos.y - 1):
-                yield pos - (0, 1)
-
-        if pos.y < self.height - 1:
-            if not self.is_wall(pos.x, pos.y + 1):
-                yield pos + (0, 1)
-    
-    def place_free(self, game_object, pos):
-        """"Checks whether a place is collision-free. 
-        Position is in pixel coordinates.
-        Place is determined using the shape of the game object"""
-
-        # TODO implement
-        return True
-
-    def position_free(self, pos):
-        """Checks whether a position is collision-free.
-        Position is in pixel coordinates."""
-
-        # TODO implement
-        return True
 
     def render(self):
         wall = self.is_wall
         map_cache = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
         tiles = map_cache[self.tileset]
-        image = pygame.Surface((self.width*MAP_TILE_WIDTH, 
+        image = pygame.Surface((self.width*MAP_TILE_WIDTH,
             self.height*MAP_TILE_HEIGHT))
         overlays = {}
         for map_y, line in enumerate(self.map):
@@ -271,9 +254,14 @@ class Level(object):
                 tile_image = tiles[tile[0]][tile[1]]
                 image.blit(tile_image,
                            (map_x*MAP_TILE_WIDTH, map_y*MAP_TILE_HEIGHT))
-        return image, overlays       
+        return image, overlays
 
+    def draw_nav_mesh(self, screen):
+        # draw the nav_mesh
+        for p in self.nav_mesh:
+            for q in self.nav_mesh[p]:
+                pygame.draw.line(screen,(0,80,0),p,q,2)
 
 if __name__ == '__main__':
     pass
-    
+
