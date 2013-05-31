@@ -38,7 +38,7 @@ except ValueError:
 F, H, NUM, G, POS, OPEN, VALID, PARENT = xrange(8)
 
 
-def astar(start_pos, neighbors, goal, start_g, cost, heuristic, limit=10,
+def astar(start_pos, neighbors, goal, start_g, cost, heuristic, limit=100,
           debug=None):
 
     """Find the shortest path from start to goal.
@@ -154,5 +154,5 @@ def astar(start_pos, neighbors, goal, start_g, cost, heuristic, limit=10,
         path.append(current[POS])
         current = nodes[current[PARENT]]
     path.reverse()
-    length = best[F] if path else inf 
+    length = best[F] if path else inf
     return path, length
