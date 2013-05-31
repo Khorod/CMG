@@ -3,6 +3,7 @@
 import pygame
 from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 from random import randint
+
 # Own imports
 import utils
 
@@ -27,7 +28,7 @@ class GameObject(pygame.sprite.Sprite):
         self.animation = self.stand_animation()
         self.speed = 2
         self.animation_counter = 0
-        self.animation_speed = 8 #higher is slower
+        self.animation_speed = 8 #higher is slower, like wut
 
     @property
     def tile_pos(self):
@@ -48,7 +49,8 @@ class GameObject(pygame.sprite.Sprite):
         self.real_rect.y = self._pos[1] + self._offset[1]
         self.depth = self.real_rect.midbottom[1]
 
-    pos = property(_get_pos, _set_pos) # magic
+    # Use special getters and setters for pos, that adjust the rect as well
+    pos = property(_get_pos, _set_pos)
 
     def move(self, dx, dy):
         """Change the position of the sprite on screen."""
@@ -63,7 +65,6 @@ class GameObject(pygame.sprite.Sprite):
                 self.pos += (dx, -dy)
                 if not level.valid_position(self):
                     self.pos += (-dx, 0)
-
 
     def stand_animation(self, direction = 0):
         """The default animation."""
@@ -158,7 +159,6 @@ class Person(GameObject):
             if self.pos.dist(adjusted_pos) < self.speed:
                 del self.path[0]
 
-
         if self.animation is None:
             self.image = self.frames[self.direction][0]
         else:
@@ -185,7 +185,6 @@ class Player(Person):
                     self.animation.next()
             except StopIteration:
                 self.animation = None
-
 
 class Cop(Person):
     """Cop object."""

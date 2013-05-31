@@ -350,7 +350,6 @@ def make_nav_mesh(walls, bounds=None, offset=7, simplify=0.001, add_points=[]):
 
     return mesh
 
-
 def find_path(start, end, mesh, grid, tilesize=(16,16)):
     """ Uses astar to find a path from start to end,
         using the given mesh and tile grid.
