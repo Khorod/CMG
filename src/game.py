@@ -7,7 +7,7 @@ import objects
 import world
 
 
-DEBUG = False
+DEBUG = True
 # Define some colors
 black    = ( 10,  10,  10)
 white    = (255, 255, 255)
