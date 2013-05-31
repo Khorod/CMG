@@ -148,14 +148,14 @@ class Person(GameObject):
 
     def update(self, level):
         if not self.path:
-            self.path = level.plan_path(self.pos + self._offset , self.final_goal)
+            self.path = level.plan_path(self.pos, self.final_goal)
         else:
             if self.animation is None:
                 self.animation = self.walk_animation()
+            adjusted_pos = utils.Point( self.path[0][0], self.path[0][1]) - self._offset
+            self.walk_to_place(level, adjusted_pos)
 
-            self.walk_to_place(level, self.path[0])
-
-            if self.pos.dist(self.path[0]) < self.speed:
+            if self.pos.dist(adjusted_pos) < self.speed:
                 del self.path[0]
 
 
