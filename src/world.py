@@ -98,10 +98,10 @@ class Level(object):
         self.map = []
         self.key = {}
 
-	parser = ConfigParser.ConfigParser()
-	parser.read(filename)
-	self.tileset = parser.get("level", "tileset")
-	self.map = parser.get("level", "map").split("\n")
+        parser = ConfigParser.ConfigParser()
+        parser.read(filename)
+        self.tileset = parser.get("level", "tileset")
+        self.map = parser.get("level", "map").split("\n")
 
         for section in parser.sections():
             if len(section) == 1:
