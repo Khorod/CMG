@@ -100,58 +100,21 @@ class Person(GameObject):
 
     def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
-        self.final_goal = (5, 5)
+        self.final_goal = (40, 128)
         self.goal = None
         self.direction = 2
         self.animation = None
         self.image = self.frames[self.direction][0]
-        #path to follow
         self.path = None
-        #idle or not
-        self.idle = False
-        self.creeper_comfort_zone = 100
-        self.person_comfort_zone = 2
-
-    def walk_random(self):
-        """walks random.. but looks more like vibrating"""
-        dx = randint(-1, 1)
-        dy = randint(-1, 1)
-        self.change_direction(dx, dy)
-        for x in range(0, randint(5, 10)):
-            print x
-            self.move(dx, dy)
-
-    def set_random_goal(self, level):
-        """set random goal within 100 pixels around itself, looks a lot better
-        than walk_random."""
-        randomx = randint(-50, 50)
-        randomy = randint(-50, 50)
-        new_x = self.pos[0] + randomx
-        new_y = self.pos[1] + randomy
-        new_x, new_y = self.boundcheck(new_x, new_y)
-        self.goal = (new_x, new_y)
-        if level.is_wall(int(new_x), int(new_y)):
-            self.goal = None
-
-
+        self.idle = True
 
     def walk_to_place(self, level, goal):
-        """walk to goal  in straight line, depending on self.speed"""
+        """walk to goal in straight line, depending on self.speed"""
         DX = self.pos[0] - goal[0]
         DY = self.pos[1] - goal[1]
         total_length = (DX**2 + DY**2)**0.5
-        dx = -1*self.speed/total_length * DX
-        dy = -1*self.speed/total_length * DY
-        self.change_direction(dx, dy)
-        self.collision_move(level, dx, dy)
-
-    def walk_away_from_place(self, level, goal):
-        """walk away from place in straight line, depending on self.speed"""
-        DX = self.pos[0] - goal[0]
-        DY = self.pos[1] - goal[1]
-        total_length = (DX**2 + DY**2)**0.5
-        dx = self.speed/total_length * DX
-        dy = self.speed/total_length * DY
+        dx = -1 * self.speed / total_length * DX
+        dy = -1 * self.speed / total_length * DY
         self.change_direction(dx, dy)
         self.collision_move(level, dx, dy)
 
@@ -175,21 +138,6 @@ class Person(GameObject):
             self.image = self.frames[self.direction][frame]
             yield None
 
-    def get_goal_from_path(self):
-        """gets goal from self.path, removes entry from path when it is entered
-        as goal"""
-        if not self.goal and self.path:
-            self.goal = (self.path[0][0]*MAP_TILE_WIDTH , self.path[0][1]*MAP_TILE_HEIGHT)
-            self.path.remove(self.path[0])
-        elif self.goal is not None and self.pos.dist(self.goal) < 30:
-            if self.path:
-                self.goal = (self.path[0][0]*MAP_TILE_WIDTH , self.path[0][1]*MAP_TILE_HEIGHT)
-                self.path.remove(self.path[0])
-            else:
-                self.goal = None
-                self.path = None
-
-
     def boundcheck(self, x, y):
         """checks if x and y are within screen bounds ( hardcoded for now)"""
         x = x if x > 0 else 0
@@ -198,44 +146,18 @@ class Person(GameObject):
         y = y if y < 320 else 320 -10
         return x, y
 
-    def walk_from_player(self, level):
-        if self.pos.dist(level.player.pos) < self.creeper_comfort_zone:
-            self.walk_away_from_place(level, level.player.pos)
-            return True
-        else:
-            return False
-
-    def walk_from_person(self, level):
-        for obj in level.game_objects:
-            if self is not obj:
-                if self.pos.dist(obj.pos) < self.person_comfort_zone:
-                    self.walk_away_from_place(level, obj.pos)
-                    return True
-        return False
-
     def update(self, level):
-        if self.walk_from_player(level):
-            pass
-        elif self.walk_from_person(level):
-            pass
-        elif not self.idle:
+        if not self.path:
+            self.path = level.plan_path(self.pos + self._offset , self.final_goal)
+        else:
             if self.animation is None:
                 self.animation = self.walk_animation()
-            self.get_goal_from_path()
-            if self.goal is not None:
-                self.walk_to_place(level, self.goal)
-            else:
-                pass#self.set_random_goal(level)
 
-        #if not self.path and not self.goal:
-        #self.path = level.plan_path(utils.Point(int(self.pos[0]),int(self.pos[1])), utils.Point(self.final_goal[0],self.final_goal[1]))
-        if self.final_goal:
-            self.path = level.plan_path(self.tile_pos, utils.Point(self.final_goal[0]/MAP_TILE_WIDTH,self.final_goal[1]/MAP_TILE_HEIGHT) )
-            print self.path
+            self.walk_to_place(level, self.path[0])
 
-        if self.final_goal:
-            if self.pos.dist(self.final_goal) < 30:
-                self.final_goal = None
+            if self.pos.dist(self.path[0]) < self.speed:
+                del self.path[0]
+
 
         if self.animation is None:
             self.image = self.frames[self.direction][0]

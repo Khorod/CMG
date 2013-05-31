@@ -7,7 +7,7 @@ import objects
 import world
 
 
-DEBUG = True
+DEBUG = False
 # Define some colors
 black    = ( 10,  10,  10)
 white    = (255, 255, 255)
@@ -48,8 +48,6 @@ while done == False:
     screen.fill(white)
 
     # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
-
-
 
     background, overlay_dict = level.render()
     overlays = pygame.sprite.RenderUpdates()
@@ -95,21 +93,20 @@ while done == False:
     click = pygame.mouse.get_pressed()
 
     if DEBUG:
+        level.draw_nav_mesh(screen)
         for obj in level.game_objects:
             #pygame.draw.rect(screen, red, obj.real_rect, 2)
             int_pos = (int(obj.pos[0]), int(obj.pos[1]))
             pygame.draw.circle(screen, blue, int_pos, 2)
+
             try:
-                scale = (world.MAP_TILE_WIDTH, world.MAP_TILE_HEIGHT)
-                scaled_path = [point.dot(scale) for point in obj.path]
-                #print scaled_path
-                pygame.draw.lines(screen, blue, False, scaled_path, 2)
+                pygame.draw.lines(screen, blue, False, obj.path, 2)
             except:
                 pass
 
         for rect in level.wall_rects:
             pygame.draw.rect(screen, red, rect, 2)
-        level.draw_nav_mesh(screen)
+
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
     # Limit to 20 frames per second
