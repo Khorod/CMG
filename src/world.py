@@ -7,6 +7,9 @@ import utils
 
 MAP_TILE_WIDTH = 32 # TODO read from ini file
 MAP_TILE_HEIGHT = 16
+SPRITE_WIDTH = 32
+SPRITE_HEIGHT = 32
+
 MAP_TILE_SIZE = (MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
 
 class TileCache:
@@ -64,7 +67,7 @@ class Level(object):
         self.screen_size = screen_size
         self.wall_rects = []
         self.load_file(filename)
-        sprite_cache = TileCache(MAP_TILE_WIDTH, MAP_TILE_HEIGHT)
+        sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
         self.game_objects = SortedUpdates()
 
         for tile_pos, tile in self.items.iteritems():
@@ -155,6 +158,9 @@ class Level(object):
 
     def collision(self, entity):
         """Check for collision."""
+        if entity.real_rect.collidelist(self.wall_rects) != -1:
+            return True
+
         self.game_objects.remove(entity) # do not detect collision with itself
         collided = pygame.sprite.spritecollideany(entity, self.game_objects,
                                                   self.real_rect_collision)
