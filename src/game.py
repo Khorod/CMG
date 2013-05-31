@@ -2,12 +2,13 @@
 
 import pygame
 import pygame.locals as pg
+
 # Own modules
 import objects
 import world
 
+DEBUG = False
 
-DEBUG = True
 # Define some colors
 black    = ( 10,  10,  10)
 white    = (255, 255, 255)
@@ -42,8 +43,6 @@ while done == False:
             if event.key == pygame.K_ESCAPE:
                 done = True
 
-
-
     # Set the screen background
     screen.fill(white)
 
@@ -55,6 +54,7 @@ while done == False:
         overlay = pygame.sprite.Sprite(overlays)
         overlay.image = image
         overlay.rect = image.get_rect().move(x * world.MAP_TILE_WIDTH, y * world.MAP_TILE_HEIGHT - world.MAP_TILE_HEIGHT)
+
     screen.blit(background, (0, 0))
     overlays.draw(screen)
 
@@ -66,7 +66,6 @@ while done == False:
 
     dx = pressed[pygame.K_d] - pressed[pygame.K_a]
     dy = pressed[pygame.K_s] - pressed[pygame.K_w]
-
 
     if pressed[pygame.K_w]:
         level.walk_animation(0)
@@ -81,7 +80,7 @@ while done == False:
         level.player.animation = None
     if dx is not 0 or dy is not 0:
         if level.player.animation is None:
-            level.player.animation = level.player.walk_animation()#stand_animation(level.player.direction)
+            level.player.animation = level.player.walk_animation()
     level.move_player(dx*2, dy*2)
     level.player.update(level)
 
@@ -109,7 +108,7 @@ while done == False:
 
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
-    # Limit to 20 frames per second
+    # Limit to 60 frames per second
     clock.tick(60)
 
     # Go ahead and update the screen with what we've drawn.
