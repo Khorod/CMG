@@ -4,6 +4,7 @@ import pygame
 from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 from random import randint
 import math
+import copy
 
 # Own imports
 import utils
@@ -102,14 +103,17 @@ class Person(GameObject):
 
     def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
-        self.final_goal = (40, 128)
+        self.final_goal = (40, 200)
         self.goal = None
         self.direction = 2
         self.animation = None
         self.image = self.frames[self.direction][0]
         self.path = None
         self.idle = True
-        self.angle = 45;
+        self.angle = 0
+        self.cone_angle = 20
+        self.turn_angle = 45
+        self.cone_length = 25
         self.move_vector = (0, 0)
         
     def walk_to_place(self, level, goal):
@@ -119,18 +123,10 @@ class Person(GameObject):
         total_length = (DX**2 + DY**2)**0.5
         dx = -1 * self.speed / total_length * DX
         dy = -1 * self.speed / total_length * DY
-        dx,  dy = self.rot_matrix_vector((dx,dy), self.angle)
+        dx,  dy = utils.rot_vector((dx,dy), self.angle)#this creates steering
         self.move_vector = (dx,dy)
         self.change_direction(dx, dy)
         self.collision_move(level, dx, dy)
-        
-    def rot_matrix_vector(self, vector, angle):
-        x = vector[0]
-        y = vector[1]
-        angle = math.radians(angle)
-        newx = x * math.cos(angle) - y * math.sin(angle)
-        newy = x * math.sin(angle) + y * math.cos(angle)
-        return newx, newy
 
     def change_direction(self, dx, dy):
         """ change self.direction depending on .., well, direction!"""
@@ -160,7 +156,91 @@ class Person(GameObject):
         y = y if y < 320 else 320 -10
         return x, y
 
+    def get_cone_lines(self):
+        """returns start and endpoint of the lines of the cone"""
+        dx = self.move_vector[0]*self.cone_length
+        dy = self.move_vector[1]*self.cone_length
+        obj_pos = utils.Point(self.real_rect.center[0],self.real_rect.center[1])
+        line_end_center = obj_pos + (dx, dy)
+        dx, dy = utils.rot_vector((dx,dy),-1*self.cone_angle)
+        line_end_left = obj_pos + (dx, dy)        
+        dx, dy = utils.rot_vector((dx,dy), 2*self.cone_angle)
+        line_end_right = obj_pos + (dx, dy)
+        return (obj_pos, line_end_center),(obj_pos, line_end_left),(obj_pos, line_end_right)
+    
+    def get_bumper_hits(self, center, left, right, level):
+        start = center[0]
+        object_list =  level.game_objects 
+        hit_center = False
+        hit_left = False
+        hit_right = False
+        
+        if object_list:
+            for obj in object_list:
+                if obj is not self:
+                    if isinstance(obj, Person):
+                        if not hit_center:
+                            if utils.line_intersects_rect(start, center[1],obj.real_rect):
+                                hit_center = True
+                        if not hit_left:
+                            if utils.line_intersects_rect(start, left[1],obj.real_rect):
+                                hit_left = True
+                        if not hit_right: 
+                            if utils.line_intersects_rect(start, right[1],obj.real_rect):
+                                hit_right = True
+                    
+        return hit_center, hit_left, hit_right
+ 
+    def fix_angle(self, angle):
+        new_angle = None
+        if angle > 360:
+            new_angle = angle % 360
+        elif angle < -360:
+            new_angle = angle % -360
+        else:
+            new_angle = angle
+        return new_angle
+        
+    def angle_decrease(self):
+        if 0< self.angle < self.turn_angle or 0 > self.angle > -1*self.turn_angle: #if  angle is close to 0, set angle to 0 (prevent overshoot)
+            self.angle = 0
+        elif self.angle > 0:
+            self.angle -= self.turn_angle/2
+        elif self.angle < 0:
+            self.angle += self.turn_angle/2
+
+
+    def adjust_angle(self, hit_center, hit_left, hit_right):
+        angle = 0
+        if hit_center:
+            if hit_right and not hit_left:                 #if someone is right infront of him and also to the right, or just infront of him
+                angle += self.turn_angle * 2                #turn hard left
+            elif hit_left and not hit_right:               #if someone is right infront of him and also to the left
+                angle += self.turn_angle *-2                #turn hard right
+            elif hit_left and hit_right:                   #if all frontal directions blocked
+                r = 2 if randint(0,1) == 1 else -2
+                angle += self.turn_angle * r                 #turn really hard left or right
+            else: #must be only infront of him
+                r = 1 if randint(0,1) == 1 else -1        #turn slightly left or right
+                angle += self.turn_angle * r   
+        elif hit_left:                                      #if someone is front/left of him only
+            angle += self.turn_angle *-1                    #turn slightly right
+        elif hit_right:                                     #if someone is front/right of him only
+            angle += self.turn_angle * 1                    #turn slightly left
+
+        
+        
+        if not hit_center and not hit_left and not hit_right:#if nothing is hit
+            self.angle_decrease()                                #return to no rotation
+        else:
+            self.angle = angle     #adjust self.angle
+            
     def update(self, level):
+        
+        center, left, right = self.get_cone_lines() #get line segments of cone
+        hit_center, hit_left, hit_right = self.get_bumper_hits(center, left, right, level)#see which line of cone is hit
+        self.adjust_angle(hit_center, hit_left, hit_right)#adjust angle
+        
         if not self.path:
             self.path = level.plan_path(self.pos, self.final_goal)
         else:

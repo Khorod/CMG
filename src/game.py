@@ -6,9 +6,10 @@ import pygame.locals as pg
 # Own modules
 import objects
 import world
+import utils
 
-DEBUG = False
-DEBUG_ANGLE = True
+DEBUG = True
+DEBUG_ANGLE = False
 
 # Define some colors
 black    = ( 10,  10,  10)
@@ -94,7 +95,7 @@ while done == False:
     if DEBUG:
         level.draw_nav_mesh(screen)
         for obj in level.game_objects:
-            #pygame.draw.rect(screen, red, obj.real_rect, 2)
+            pygame.draw.rect(screen, red, obj.real_rect, 2)
             int_pos = (int(obj.pos[0]), int(obj.pos[1]))
             pygame.draw.circle(screen, blue, int_pos, 2)
 
@@ -109,10 +110,15 @@ while done == False:
     if DEBUG_ANGLE:
         for obj in level.game_objects:
             if isinstance(obj, objects.Person):
-                dx = obj.move_vector[0]*10
-                dy = obj.move_vector[1]*10
-                #pygame.draw.line(screen, red, obj.pos + obj._offset, (obj.pos[0] + obj._offset[0] + dx ,obj.pos[1] + obj._offset[1] + dy), 3)
-                pygame.draw.line(screen, red, obj.pos , (obj.pos[0] + dx ,obj.pos[1] + dy), 3)
+                dx = obj.move_vector[0]*obj.cone_length
+                dy = obj.move_vector[1]*obj.cone_length
+                angle = obj.cone_angle
+                obj_pos = utils.Point(obj.real_rect.center[0],obj.real_rect.center[1])#obj.pos
+                pygame.draw.line(screen, red, obj_pos , obj_pos + (dx, dy), 3) #line of direction
+                dx, dy = utils.rot_vector((dx,dy),-1*angle)
+                pygame.draw.line(screen, green, obj_pos , obj_pos + (dx, dy), 3) #left boundary
+                dx, dy = utils.rot_vector((dx,dy), 2*angle)
+                pygame.draw.line(screen, blue, obj_pos , obj_pos + (dx, dy), 3) #right boundary
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
     # Limit to 60 frames per second

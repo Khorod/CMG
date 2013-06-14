@@ -153,6 +153,14 @@ def line_intersects_rect(p0, p1, r):
                     t1 = ti
     # Return (two) intersection coords
     return ((t0, (p0x + t0*dx, p0y + t0*dy)), (t1, (p0x + t1*dx, p0y + t1*dy)))
+    
+def line_intersects_rects(p0, p1, rects):
+    print p0, p1, rects
+    if rects:
+        for rect in rects:
+            if line_intersects_rect(p0, p1, rect):
+                return True
+    return False
 
 def line_intersects_grid((x0,y0), (x1,y1), grid, grid_cell_size=(1,1)):
     """ Performs a line/grid intersection, finding the "super cover"
@@ -378,6 +386,14 @@ def find_path(start, end, mesh, grid, tilesize=(16,16)):
     heuristic  = lambda n: ((n[0]-end[0]) ** 2 + (n[1]-end[1]) ** 2) ** 0.5
     nodes, length = astar(start, neighbours, goal, 0, cost, heuristic)
     return nodes
+    
+def rot_vector(vector, angle):
+    x = vector[0]
+    y = vector[1]
+    angle = math.radians(angle)
+    newx = x * math.cos(angle) - y * math.sin(angle)
+    newy = x * math.sin(angle) + y * math.cos(angle)
+    return newx, newy
 
 if __name__ == '__main__':
     import doctest
