@@ -112,8 +112,10 @@ class Person(GameObject):
         self.idle = True
         self.angle = 0
         self.cone_angle = 10
-        self.turn_angle = 10
+        self.turn_angle = 30
         self.cone_length = 50
+        self.return_angle = 10
+        self.max_angle = 90
         self.move_vector = (0, 0)
         
     def walk_to_place(self, level, goal):
@@ -171,28 +173,6 @@ class Person(GameObject):
     def get_bumper_hits(self, center, left, right, level):
         start = center[0]
         object_list =  level.game_objects 
-        hit_center = False
-        hit_left = False
-        hit_right = False
-        
-        if object_list:
-            for obj in object_list:
-                if obj is not self:
-                    if isinstance(obj, Person):
-                        if not hit_center:
-                            if utils.line_intersects_rect(start, center[1],obj.real_rect):
-                                hit_center = True
-                        if not hit_left:
-                            if utils.line_intersects_rect(start, left[1],obj.real_rect):
-                                hit_left = True
-                        if not hit_right: 
-                            if utils.line_intersects_rect(start, right[1],obj.real_rect):
-                                hit_right = True
-                    
-        return hit_center, hit_left, hit_right
-        
-    def get_bumper_wall_hits(self, center, left, right, level):
-        start = center[0]
         rect_list =  level.wall_rects 
         hit_center = False
         hit_left = False
@@ -211,6 +191,21 @@ class Person(GameObject):
                         if not hit_right: 
                             if utils.line_intersects_rect(start, right[1],obj.real_rect):
                                 hit_right = True
+        """                        
+        if rect_list:#this will also check for walls
+            for rect in rect_list:
+                if not hit_center:
+                    if utils.line_intersects_rect(start, center[1],rect):
+                        hit_center = True
+                if not hit_left:
+                    if utils.line_intersects_rect(start, left[1],rect):
+                        hit_left = True
+                if not hit_right: 
+                    if utils.line_intersects_rect(start, right[1],rect):
+                        hit_right = True
+        """            
+        return hit_center, hit_left, hit_right
+        
  
     def fix_angle(self, angle):
         new_angle = None
@@ -223,12 +218,12 @@ class Person(GameObject):
         return new_angle
         
     def angle_decrease(self):
-        if 0< self.angle < self.turn_angle or 0 > self.angle > -1*self.turn_angle: #if  angle is close to 0, set angle to 0 (prevent overshoot)
+        if 0< self.angle < self.return_angle or 0 > self.angle > -1*self.return_angle: #if  angle is close to 0, set angle to 0 (prevent overshoot)
             self.angle = 0
         elif self.angle > 0:
-            self.angle -= self.turn_angle/2
+            self.angle -= self.return_angle
         elif self.angle < 0:
-            self.angle += self.turn_angle/2
+            self.angle += self.return_angle
 
 
     def adjust_angle(self, hit_center, hit_left, hit_right):
@@ -254,7 +249,8 @@ class Person(GameObject):
         if not hit_center and not hit_left and not hit_right:#if nothing is hit
             self.angle_decrease()                                #return to no rotation
         else:
-            self.angle = angle +self.angle    #adjust self.angle
+            newangle = angle +self.angle
+            self.angle = newangle if newangle < self.max_angle else self.max_angle    #adjust self.angle
             
     def update(self, level):
         
@@ -272,6 +268,10 @@ class Person(GameObject):
 
             if self.pos.dist(adjusted_pos) < self.speed:
                 del self.path[0]
+                
+            if self.pos.dist(self.final_goal) < self.speed:
+                if len(self.final_goal) > 1:
+                    self.final_goal = (1000, 200)
 
         if self.animation is None:
             self.image = self.frames[self.direction][0]
