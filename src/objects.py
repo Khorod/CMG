@@ -3,6 +3,7 @@
 import pygame
 from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 from random import randint
+import math
 
 # Own imports
 import utils
@@ -108,7 +109,9 @@ class Person(GameObject):
         self.image = self.frames[self.direction][0]
         self.path = None
         self.idle = True
-
+        self.angle = 45;
+        self.move_vector = (0, 0)
+        
     def walk_to_place(self, level, goal):
         """walk to goal in straight line, depending on self.speed"""
         DX = self.pos[0] - goal[0]
@@ -116,8 +119,18 @@ class Person(GameObject):
         total_length = (DX**2 + DY**2)**0.5
         dx = -1 * self.speed / total_length * DX
         dy = -1 * self.speed / total_length * DY
+        dx,  dy = self.rot_matrix_vector((dx,dy), self.angle)
+        self.move_vector = (dx,dy)
         self.change_direction(dx, dy)
         self.collision_move(level, dx, dy)
+        
+    def rot_matrix_vector(self, vector, angle):
+        x = vector[0]
+        y = vector[1]
+        angle = math.radians(angle)
+        newx = x * math.cos(angle) - y * math.sin(angle)
+        newy = x * math.sin(angle) + y * math.cos(angle)
+        return newx, newy
 
     def change_direction(self, dx, dy):
         """ change self.direction depending on .., well, direction!"""

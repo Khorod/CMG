@@ -8,6 +8,7 @@ import objects
 import world
 
 DEBUG = False
+DEBUG_ANGLE = True
 
 # Define some colors
 black    = ( 10,  10,  10)
@@ -104,7 +105,14 @@ while done == False:
 
         for rect in level.wall_rects:
             pygame.draw.rect(screen, red, rect, 2)
-
+            
+    if DEBUG_ANGLE:
+        for obj in level.game_objects:
+            if isinstance(obj, objects.Person):
+                dx = obj.move_vector[0]*10
+                dy = obj.move_vector[1]*10
+                #pygame.draw.line(screen, red, obj.pos + obj._offset, (obj.pos[0] + obj._offset[0] + dx ,obj.pos[1] + obj._offset[1] + dy), 3)
+                pygame.draw.line(screen, red, obj.pos , (obj.pos[0] + dx ,obj.pos[1] + dy), 3)
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
     # Limit to 60 frames per second
