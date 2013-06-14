@@ -248,9 +248,11 @@ class Person(GameObject):
         
         if not hit_center and not hit_left and not hit_right:#if nothing is hit
             self.angle_decrease()                                #return to no rotation
+            self.speed = 2
         else:
             newangle = angle +self.angle
             self.angle = newangle if newangle < self.max_angle else self.max_angle    #adjust self.angle
+            self.speed = 1
             
     def update(self, level):
         
@@ -265,11 +267,13 @@ class Person(GameObject):
                 self.animation = self.walk_animation()
             adjusted_pos = utils.Point( self.path[0][0], self.path[0][1]) - self._offset
             self.walk_to_place(level, adjusted_pos)
-
-            if self.pos.dist(adjusted_pos) < self.speed:
+            
+            self_pos = utils.Point(self.real_rect.topleft[0],self.real_rect.topleft[1])
+            
+            if self_pos.dist(self.path[0]) < self.speed:
                 del self.path[0]
                 
-            if self.pos.dist(self.final_goal) < self.speed:
+            if self_pos.dist(self.final_goal) < self.speed:
                 if len(self.final_goal) > 1:
                     self.final_goal = (1000, 200)
 
