@@ -9,8 +9,7 @@ import world
 import utils
 
 DEBUG = True
-DEBUG_ANGLE = False
-
+DEBUG_ANGLE = True
 # Define some colors
 black    = ( 10,  10,  10)
 white    = (255, 255, 255)

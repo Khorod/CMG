@@ -307,7 +307,7 @@ def rects_merge(rects):
     # Stack twice, once in each direction
     return stack(stack(rects),horizontal=True)
 
-def make_nav_mesh(walls, bounds=None, offset=7, simplify=0.001, add_points=[]):
+def make_nav_mesh(walls, bounds=None, offset=7, simplify=0.000001, add_points=[]):
     """ Generate an almost optimal navigation mesh
         between the given walls (rectangles), within
         the world bounds (a big rectangle).

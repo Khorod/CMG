@@ -111,9 +111,9 @@ class Person(GameObject):
         self.path = None
         self.idle = True
         self.angle = 0
-        self.cone_angle = 20
-        self.turn_angle = 45
-        self.cone_length = 25
+        self.cone_angle = 10
+        self.turn_angle = 10
+        self.cone_length = 50
         self.move_vector = (0, 0)
         
     def walk_to_place(self, level, goal):
@@ -190,6 +190,27 @@ class Person(GameObject):
                                 hit_right = True
                     
         return hit_center, hit_left, hit_right
+        
+    def get_bumper_wall_hits(self, center, left, right, level):
+        start = center[0]
+        rect_list =  level.wall_rects 
+        hit_center = False
+        hit_left = False
+        hit_right = False
+        
+        if object_list:
+            for obj in object_list:
+                if obj is not self:
+                    if isinstance(obj, Person):
+                        if not hit_center:
+                            if utils.line_intersects_rect(start, center[1],obj.real_rect):
+                                hit_center = True
+                        if not hit_left:
+                            if utils.line_intersects_rect(start, left[1],obj.real_rect):
+                                hit_left = True
+                        if not hit_right: 
+                            if utils.line_intersects_rect(start, right[1],obj.real_rect):
+                                hit_right = True
  
     def fix_angle(self, angle):
         new_angle = None
@@ -233,7 +254,7 @@ class Person(GameObject):
         if not hit_center and not hit_left and not hit_right:#if nothing is hit
             self.angle_decrease()                                #return to no rotation
         else:
-            self.angle = angle     #adjust self.angle
+            self.angle = angle +self.angle    #adjust self.angle
             
     def update(self, level):
         
