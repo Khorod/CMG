@@ -300,8 +300,8 @@ class Person(GameObject):
         center, left, right = self.get_cone_lines() #get line segments of cone
         hit_center, hit_left, hit_right = self.get_bumper_hits(center, left, right, level)#see which line of cone is hit
         self.adjust_angle(hit_center, hit_left, hit_right)#adjust angle
-        self_pos = utils.Point(self.real_rect.topleft[0],self.real_rect.topleft[1])
-        self.look_for_money(level)
+        self_pos = utils.Point(self.real_rect.center[0],self.real_rect.center[1])
+        self.look_for_money(level)# look for moneys
                    
         if not self.path:
             self.path = level.plan_path(self_pos, self.final_goal)
@@ -310,16 +310,17 @@ class Person(GameObject):
             if self.animation is None:
                 self.animation = self.walk_animation()
             adjusted_pos = utils.Point( self.path[0][0], self.path[0][1]) - self._offset
+            adjusted_pos = adjusted_pos - (10,0) # offset seems to need adjustment
             self.walk_to_place(level, adjusted_pos) 
             
-            if self.line_hits_wall_rects(self_pos, self.path[0], level):#if a wall is in the way to your next waypoint, replan
+            if self.line_hits_wall_rects(self.real_rect.center, self.path[0], level):#if a wall is in the way to your next waypoint, replan
                 self.path = level.plan_path(self_pos, self.final_goal)
             
             if self.path:#in case replanning did not yield a path                           
-                if self_pos.dist(self.path[0]) < self.speed:
+                if self_pos.dist(self.path[0]) < 3:#self.real_rect.collidepoint(self.path[0]):
                     del self.path[0]
                 
-            if self_pos.dist(self.final_goal) < self.speed: # if the person has reached their final goal
+            if self.real_rect.collidepoint(self.final_goal): # if the person has reached their final goal
                 if len(self.final_goal) > 1:
                     self.final_goal = (1000, 200) #goto here for now TODO: change; perhaps a patrol list depending where you are in the level
 
@@ -370,7 +371,7 @@ class Money(GameObject):
         self_pos = utils.Point(self.real_rect.center[0], self.real_rect.center[1])
         for obj in level.game_objects:
             if isinstance(obj, Person):
-                if self.real_rect.inflate(3,3).colliderect(obj.real_rect):
+                if self.real_rect.inflate(4,6).colliderect(obj.real_rect):
                     level.click_objects.remove(self)
                     level.game_objects.remove(self)
         
