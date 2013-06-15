@@ -69,7 +69,8 @@ class Level(object):
         self.load_file(filename)
         sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
         self.game_objects = SortedUpdates()
-
+        self.mouse_released = False
+        
         for tile_pos, tile in self.items.iteritems():
             position = (tile_pos[0] * MAP_TILE_WIDTH,
                         tile_pos[1] * MAP_TILE_HEIGHT)
@@ -267,6 +268,28 @@ class Level(object):
         for p in self.nav_mesh:
             for q in self.nav_mesh[p]:
                 pygame.draw.line(screen,(0,80,0),p,q,2)
+    
+    def mouse_drop_object(self, string_type, pos):
+        sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
+        sprite = sprite_cache._load_tile_table("../img/player_old.png", SPRITE_WIDTH, SPRITE_HEIGHT)
+        newsprite = objects.Person(pos, sprite, pygame.Rect(8, 28, 16, 4))
+        self.game_objects.add(newsprite)
+        
+    def mouse_control(self):
+        # Get mouse position
+        click = pygame.mouse.get_pressed()
+        
+        if self.mouse_released:
+            self.mouse_released = False
+            if click[0] == 1:
+                offset = (8,28)
+                mouse_pos = pygame.mouse.get_pos()
+                adjusted_pos = ( mouse_pos[0]- offset[0], mouse_pos[1]- offset[1] )
+                self.mouse_drop_object("person",adjusted_pos)
+        
+        if click[0] == 0:
+            self.mouse_released = True
+
 
 if __name__ == '__main__':
     pass

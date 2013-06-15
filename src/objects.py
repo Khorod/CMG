@@ -112,10 +112,10 @@ class Person(GameObject):
         self.idle = True
         self.angle = 0
         self.cone_angle = 10
-        self.turn_angle = 30
+        self.turn_angle = 45
         self.cone_length = 50
-        self.return_angle = 10
-        self.max_angle = 90
+        self.return_angle = 5
+        self.max_angle = 180
         self.move_vector = (0, 0)
         
     def walk_to_place(self, level, goal):
@@ -206,7 +206,13 @@ class Person(GameObject):
         """            
         return hit_center, hit_left, hit_right
         
- 
+    def line_hits_wall_rects(self, p1, p2, level):
+        rect_list = level.wall_rects
+        if rect_list:   #this check for walls
+            for rect in rect_list:
+                if utils.line_intersects_rect(p1, p2, rect):
+                    return True
+                    
     def fix_angle(self, angle):
         new_angle = None
         if angle > 360:
@@ -251,7 +257,12 @@ class Person(GameObject):
             self.speed = 2
         else:
             newangle = angle +self.angle
-            self.angle = newangle if newangle < self.max_angle else self.max_angle    #adjust self.angle
+            if newangle > self.max_angle:
+                newangle = self.max_angle
+            if newangle < -1*self.max_angle:
+                newangle = -1*self.max_angle
+                
+            self.angle = newangle #adjust self.angle
             self.speed = 1
             
     def update(self, level):
@@ -259,16 +270,19 @@ class Person(GameObject):
         center, left, right = self.get_cone_lines() #get line segments of cone
         hit_center, hit_left, hit_right = self.get_bumper_hits(center, left, right, level)#see which line of cone is hit
         self.adjust_angle(hit_center, hit_left, hit_right)#adjust angle
+        self_pos = utils.Point(self.real_rect.topleft[0],self.real_rect.topleft[1])
         
         if not self.path:
-            self.path = level.plan_path(self.pos, self.final_goal)
+            self.path = level.plan_path(self_pos, self.final_goal)
         else:
+            
             if self.animation is None:
                 self.animation = self.walk_animation()
             adjusted_pos = utils.Point( self.path[0][0], self.path[0][1]) - self._offset
-            self.walk_to_place(level, adjusted_pos)
+            self.walk_to_place(level, adjusted_pos) 
             
-            self_pos = utils.Point(self.real_rect.topleft[0],self.real_rect.topleft[1])
+            if self.line_hits_wall_rects(self_pos, self.path[0], level):
+                self.path = level.plan_path(self_pos, self.final_goal)
             
             if self_pos.dist(self.path[0]) < self.speed:
                 del self.path[0]

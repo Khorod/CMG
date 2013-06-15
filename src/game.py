@@ -2,13 +2,14 @@
 
 import pygame
 import pygame.locals as pg
+import time 
 
 # Own modules
 import objects
 import world
 import utils
 
-DEBUG = False
+DEBUG = True
 DEBUG_ANGLE = False
 # Define some colors
 black    = ( 10,  10,  10)
@@ -44,6 +45,9 @@ while done == False:
             if event.key == pygame.K_ESCAPE:
                 done = True
 
+   
+    
+    
     # Set the screen background
     screen.fill(white)
 
@@ -60,7 +64,8 @@ while done == False:
 
     level.game_objects.clear(screen, background)
     level.update_objects()
-
+    
+    level.mouse_control() #mouse controls, like dropping object into level
     # Handle player movement
     pressed = pygame.key.get_pressed()
 
