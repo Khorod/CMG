@@ -102,7 +102,7 @@ while done == False:
             pygame.draw.rect(screen, red, obj.real_rect, 2)
             int_pos = (int(obj.pos[0]), int(obj.pos[1]))
             pygame.draw.circle(screen, blue, int_pos, 2)
-            pygame.draw.circle(screen, red, obj.final_goal, 3)
+           # pygame.draw.circle(screen, red, obj.final_goal, 3)
 
             try:
                 pygame.draw.lines(screen, blue, False, obj.path, 2)

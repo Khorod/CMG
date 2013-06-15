@@ -117,6 +117,7 @@ class Person(GameObject):
         self.return_angle = 5
         self.max_angle = 180
         self.move_vector = (0, 0)
+        self.target_money = None
         
     def walk_to_place(self, level, goal):
         """walk to goal in straight line, depending on self.speed"""
@@ -264,6 +265,35 @@ class Person(GameObject):
                 
             self.angle = newangle #adjust self.angle
             self.speed = 1
+        
+    def look_for_money(self,level):
+        self_pos = utils.Point(self.real_rect.topleft[0],self.real_rect.topleft[1])
+        money_list = []
+        if level.click_objects:
+            for obj in level.click_objects:#look for money in click_objects
+                if isinstance(obj, Money):
+                    money_list.append(obj)
+                    
+        if money_list:
+            for obj in money_list:
+                if not self.target_money: #if you arent looking for money..
+                    self.final_goal = obj.real_rect.center
+                    self.path = level.plan_path(self_pos, obj.real_rect.center)
+                    self.target_money = obj  #you are now!
+                    break
+                elif self.target_money is not obj and self.target_money not in level.click_objects: #in case of more than 1 moneys
+                    self.final_goal = obj.real_rect.center
+                    self.path = level.plan_path(self_pos, obj.real_rect.center)
+                    self.target_money = obj  
+                    break
+                
+                
+        else:
+            if self.target_money:
+                self.path = None
+                self.final_goal = self.real_rect.center
+            self.target_money = None
+            
             
     def update(self, level):
         
@@ -271,7 +301,8 @@ class Person(GameObject):
         hit_center, hit_left, hit_right = self.get_bumper_hits(center, left, right, level)#see which line of cone is hit
         self.adjust_angle(hit_center, hit_left, hit_right)#adjust angle
         self_pos = utils.Point(self.real_rect.topleft[0],self.real_rect.topleft[1])
-        
+        self.look_for_money(level)
+                   
         if not self.path:
             self.path = level.plan_path(self_pos, self.final_goal)
         else:
@@ -281,15 +312,16 @@ class Person(GameObject):
             adjusted_pos = utils.Point( self.path[0][0], self.path[0][1]) - self._offset
             self.walk_to_place(level, adjusted_pos) 
             
-            if self.line_hits_wall_rects(self_pos, self.path[0], level):
+            if self.line_hits_wall_rects(self_pos, self.path[0], level):#if a wall is in the way to your next waypoint, replan
                 self.path = level.plan_path(self_pos, self.final_goal)
             
-            if self_pos.dist(self.path[0]) < self.speed:
-                del self.path[0]
+            if self.path:#in case replanning did not yield a path                           
+                if self_pos.dist(self.path[0]) < self.speed:
+                    del self.path[0]
                 
-            if self_pos.dist(self.final_goal) < self.speed:
+            if self_pos.dist(self.final_goal) < self.speed: # if the person has reached their final goal
                 if len(self.final_goal) > 1:
-                    self.final_goal = (1000, 200)
+                    self.final_goal = (1000, 200) #goto here for now TODO: change; perhaps a patrol list depending where you are in the level
 
         if self.animation is None:
             self.image = self.frames[self.direction][0]
@@ -327,3 +359,22 @@ class Cop(Person):
     def update(self, level):
         # Logic here!
         pass
+        
+class Money(GameObject):
+    """moni moni moni"""
+    def __init__(self, pos, image, rect):
+        GameObject.__init__(self, pos, image, rect)
+
+        
+    def money_grabbed_check(self, level):
+        self_pos = utils.Point(self.real_rect.center[0], self.real_rect.center[1])
+        for obj in level.game_objects:
+            if isinstance(obj, Person):
+                if self.real_rect.inflate(3,3).colliderect(obj.real_rect):
+                    level.click_objects.remove(self)
+                    level.game_objects.remove(self)
+        
+        
+    def update(self, level):
+        self.money_grabbed_check(level)
+        

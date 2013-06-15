@@ -69,6 +69,7 @@ class Level(object):
         self.load_file(filename)
         sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
         self.game_objects = SortedUpdates()
+        self.click_objects = SortedUpdates()
         self.mouse_released = False
         
         for tile_pos, tile in self.items.iteritems():
@@ -270,9 +271,17 @@ class Level(object):
                 pygame.draw.line(screen,(0,80,0),p,q,2)
     
     def mouse_drop_object(self, string_type, pos):
-        sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
-        sprite = sprite_cache._load_tile_table("../img/player_old.png", SPRITE_WIDTH, SPRITE_HEIGHT)
-        newsprite = objects.Person(pos, sprite, pygame.Rect(8, 28, 16, 4))
+        newsprite = None
+        if string_type == "person":
+            sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
+            sprite = sprite_cache._load_tile_table("../img/player_old.png", SPRITE_WIDTH, SPRITE_HEIGHT)
+            newsprite = objects.Person(pos, sprite, pygame.Rect(8, 28, 16, 4))
+        if string_type == "money":
+            sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
+            sprite = sprite_cache._load_tile_table("../img/money.png", SPRITE_WIDTH, SPRITE_HEIGHT)
+            newsprite = objects.Money(pos, sprite, pygame.Rect(8, 28, 16, 4))
+            
+        self.click_objects.add(newsprite)
         self.game_objects.add(newsprite)
         
     def mouse_control(self):
@@ -285,7 +294,7 @@ class Level(object):
                 offset = (8,28)
                 mouse_pos = pygame.mouse.get_pos()
                 adjusted_pos = ( mouse_pos[0]- offset[0], mouse_pos[1]- offset[1] )
-                self.mouse_drop_object("person",adjusted_pos)
+                self.mouse_drop_object("money",adjusted_pos)
         
         if click[0] == 0:
             self.mouse_released = True
