@@ -36,8 +36,8 @@ level = world.Level(screen_size, 'level_wonly.map')
 #Loop until the user clicks the close button.
 done = False
 
-#add bus, that goes left to right
-level.create_bus_left_to_right((-100,100), (1500,100), 5)
+#add a bus!, that goes left to right
+level.create_bus_left_to_right((-150,100), (1500,100), 5)
 
 # Main Program Loop
 while done == False:

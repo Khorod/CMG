@@ -1,5 +1,5 @@
 [level]
-tileset = ../img/ground2.png
+tileset = ../img/ground_test.png
       
 map = ######################A##A#########
       ######################.##.#########
