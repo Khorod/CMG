@@ -404,7 +404,6 @@ class Bus_LR(GameObject):
         self.endpos = endpos
         self.speed = 3
         self.type = type # front mid or back 1 2 or 3
-    
     def collision_move_noborders(self, level, dx, dy):
         """Change the position of the sprite on screen."""
         self.pos += (dx, dy)
@@ -415,14 +414,24 @@ class Bus_LR(GameObject):
                 if not level.valid_position_noborders(self):
                     self.pos += (-dx, 0)
                     
+    def drive_stop_for_persons(self,level):
+        if self.type == 3:
+            for obj in level.game_objects:
+                if isinstance(obj,Person):
+                    if self.rect.inflate(20,20).colliderect(obj.real_rect):
+                        return
+        self.collision_move_noborders(level,self.speed,0) 
+                    
+
+           
     
     def update(self, level):
         # Logic here!
-        self.collision_move_noborders(level,self.speed,0)
+        self.drive_stop_for_persons(level)
         self_pos = utils.Point(self.pos[0],self.pos[1])
         self_endpos = utils.Point(self.endpos[0],self.endpos[1])
         if self_pos.dist(self_endpos) < self.speed:
             level.game_objects.remove(self)
-        if level.player:
-            if self.rect.inflate(10,10).colliderect(level.player.real_rect) and self.type == 3:
-                level.remove_player()
+        if self.rect.inflate(10,10).colliderect(level.player.real_rect) and self.type == 3:
+            level.remove_player()
+        
