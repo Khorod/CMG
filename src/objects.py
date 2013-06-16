@@ -119,6 +119,7 @@ class Person(GameObject):
         self.max_angle = 180
         self.move_vector = (0, 0)
         self.target_money = None
+        self.old_goal_money = None
         
     def walk_to_place(self, level, goal):
         """walk to goal in straight line, depending on self.speed"""
@@ -276,6 +277,8 @@ class Person(GameObject):
                     money_list.append(obj)
                     
         if money_list:
+            if self.old_goal_money == None:
+                self.old_goal_money = self.final_goal
             for obj in money_list:
                 if not self.target_money: #if you arent looking for money..
                     self.final_goal = obj.real_rect.center
@@ -292,7 +295,8 @@ class Person(GameObject):
         else:
             if self.target_money:
                 self.path = None
-                self.final_goal = self.real_rect.center
+                self.final_goal = self.old_goal_money
+                self.old_goal_money = None
             self.target_money = None
     
     def get_new_final_goal(self, final_goal):
