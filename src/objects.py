@@ -5,6 +5,7 @@ from world import MAP_TILE_WIDTH, MAP_TILE_HEIGHT
 from random import randint
 import math
 import copy
+import time
 
 # Own imports
 import utils
@@ -103,7 +104,7 @@ class Person(GameObject):
 
     def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
-        self.final_goal = (40, 200)
+        self.final_goal = (10, 40) if position[0] >550 else (1100,40)
         self.goal = None
         self.direction = 2
         self.animation = None
@@ -286,13 +287,19 @@ class Person(GameObject):
                     self.path = level.plan_path(self_pos, obj.real_rect.center)
                     self.target_money = obj  
                     break
-                
+    
                 
         else:
             if self.target_money:
                 self.path = None
                 self.final_goal = self.real_rect.center
             self.target_money = None
+    
+    def get_new_final_goal(self, final_goal):
+        if final_goal == (10,40):
+            self.final_goal = (1100,40)
+        else:
+            self.final_goal = (10,40)
             
             
     def update(self, level):
@@ -317,12 +324,12 @@ class Person(GameObject):
                 self.path = level.plan_path(self_pos, self.final_goal)
             
             if self.path:#in case replanning did not yield a path                           
-                if self_pos.dist(self.path[0]) < 3:#self.real_rect.collidepoint(self.path[0]):
+                if self_pos.dist(self.path[0]) < 10:#slightly bigger range:#self.real_rect.collidepoint(self.path[0]):
                     del self.path[0]
                 
             if self.real_rect.collidepoint(self.final_goal): # if the person has reached their final goal
                 if len(self.final_goal) > 1:
-                    self.final_goal = (1000, 200) #goto here for now TODO: change; perhaps a patrol list depending where you are in the level
+                    self.get_new_final_goal(self.final_goal)#1000, 200) #goto here for now TODO: change; perhaps a patrol list depending where you are in the level
 
         if self.animation is None:
             self.image = self.frames[self.direction][0]
@@ -365,17 +372,57 @@ class Money(GameObject):
     """moni moni moni"""
     def __init__(self, pos, image, rect):
         GameObject.__init__(self, pos, image, rect)
-
+        self.dissapear_timer = 3
+        self.start_timer = None
         
+    def start_dissapear_timer(self):
+        if self.start_timer is None:
+            self.start_timer  = time.time()
+         
+            
     def money_grabbed_check(self, level):
-        self_pos = utils.Point(self.real_rect.center[0], self.real_rect.center[1])
-        for obj in level.game_objects:
-            if isinstance(obj, Person):
-                if self.real_rect.inflate(4,6).colliderect(obj.real_rect):
-                    level.click_objects.remove(self)
-                    level.game_objects.remove(self)
-        
+        if self.start_timer is None:
+            self_pos = utils.Point(self.real_rect.center[0], self.real_rect.center[1])
+            for obj in level.game_objects:
+                if isinstance(obj, Person) or isinstance(obj, Player):
+                    if self.pos.dist(obj.real_rect.center) < MAP_TILE_WIDTH/2:
+                        self.start_dissapear_timer()
+        else:
+            remaining = self.start_timer + self.dissapear_timer - time.time()
+            if remaining <= 0:
+                level.game_objects.remove(self)
+                level.click_objects.remove(self)
         
     def update(self, level):
         self.money_grabbed_check(level)
         
+
+class Bus_LR(GameObject):
+    
+    def __init__(self, pos, image, rect, endpos = None, type = None ):
+        GameObject.__init__(self, pos, image, rect)
+        self.endpos = endpos
+        self.speed = 3
+        self.type = type # front mid or back 1 2 or 3
+    
+    def collision_move_noborders(self, level, dx, dy):
+        """Change the position of the sprite on screen."""
+        self.pos += (dx, dy)
+        if not level.valid_position_noborders(self):
+            self.pos += (-dx, 0)
+            if not level.valid_position_noborders(self):
+                self.pos += (dx, -dy)
+                if not level.valid_position_noborders(self):
+                    self.pos += (-dx, 0)
+                    
+    
+    def update(self, level):
+        # Logic here!
+        self.collision_move_noborders(level,self.speed,0)
+        self_pos = utils.Point(self.pos[0],self.pos[1])
+        self_endpos = utils.Point(self.endpos[0],self.endpos[1])
+        if self_pos.dist(self_endpos) < self.speed:
+            level.game_objects.remove(self)
+        if level.player:
+            if self.rect.inflate(10,10).colliderect(level.player.real_rect) and self.type == 3:
+                level.remove_player()

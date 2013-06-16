@@ -9,7 +9,7 @@ import objects
 import world
 import utils
 
-DEBUG = True
+DEBUG = False
 DEBUG_ANGLE = False
 # Define some colors
 black    = ( 10,  10,  10)
@@ -36,6 +36,9 @@ level = world.Level(screen_size, 'level_wonly.map')
 #Loop until the user clicks the close button.
 done = False
 
+#add bus, that goes left to right
+level.create_bus_left_to_right((-100,100), (1500,100), 5)
+
 # Main Program Loop
 while done == False:
     for event in pygame.event.get(): # User did something
@@ -47,7 +50,7 @@ while done == False:
 
    
     
-    
+
     # Set the screen background
     screen.fill(white)
 

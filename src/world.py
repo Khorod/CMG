@@ -71,6 +71,7 @@ class Level(object):
         self.game_objects = SortedUpdates()
         self.click_objects = SortedUpdates()
         self.mouse_released = False
+        self.bus_objects = SortedUpdates()
         
         for tile_pos, tile in self.items.iteritems():
             position = (tile_pos[0] * MAP_TILE_WIDTH,
@@ -153,10 +154,15 @@ class Level(object):
         return not self.outside_screen(entity.pos) and \
             not self.collision(entity)
 
+    def valid_position_noborders(self, entity):
+        """Check whether the entity's position is valid, i.e. it is inside the
+        screen and has no collision."""
+        return not self.collision(entity)
+            
     def outside_screen(self, pos):
         """Check whether the given position is outside of the screen."""
-        return pos.x < 0 or pos.y < 0 or \
-            pos.x > self.screen_size[0] or pos.y > self.screen_size[1]
+        return pos.x < 0 or pos.y < 0-5 or \
+            pos.x > self.screen_size[0]-8 or pos.y > self.screen_size[1]#tweaked
 
     def collision(self, entity):
         """Check for collision."""
@@ -279,7 +285,7 @@ class Level(object):
         if string_type == "money":
             sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
             sprite = sprite_cache._load_tile_table("../img/money.png", SPRITE_WIDTH, SPRITE_HEIGHT)
-            newsprite = objects.Money(pos, sprite, pygame.Rect(8, 28, 16, 4))
+            newsprite = objects.Money(pos, sprite, pygame.Rect(8, 28, 0, 0))
             
         self.click_objects.add(newsprite)
         self.game_objects.add(newsprite)
@@ -298,8 +304,35 @@ class Level(object):
         
         if click[0] == 0:
             self.mouse_released = True
-
-
+    
+    def create_bus_left_to_right(self, startpos, endpos, length):
+        for i in range (length):
+            if i == 0:
+                self.spawn_bus(startpos,endpos, 1)
+            if  length-1 > i > 0 :
+                pos = (startpos[0]+MAP_TILE_WIDTH*i, startpos[1])
+                self.spawn_bus(pos,endpos, 2)
+            if i == length-1:
+                pos = (startpos[0]+MAP_TILE_WIDTH*i, startpos[1])
+                self.spawn_bus(pos,endpos, 3)
+                
+    def spawn_bus(self, pos, endpos, type):
+        sprite_cache = TileCache(SPRITE_WIDTH, SPRITE_HEIGHT)
+        if type == 1:
+            sprite = sprite_cache._load_tile_table("../img/bus_back.png", SPRITE_WIDTH, SPRITE_HEIGHT)
+            newsprite = objects.Bus_LR(pos, sprite, pygame.Rect(0, 16, 32, 16),endpos,type)
+        if type == 2:
+            sprite = sprite_cache._load_tile_table("../img/bus_mid.png", SPRITE_WIDTH, SPRITE_HEIGHT)
+            newsprite = objects.Bus_LR(pos, sprite, pygame.Rect(0, 16, 32, 16),endpos,type)
+        if type == 3:
+            sprite = sprite_cache._load_tile_table("../img/bus_front.png", SPRITE_WIDTH, SPRITE_HEIGHT)
+            newsprite = objects.Bus_LR(pos, sprite, pygame.Rect(0, 16, 32, 16),endpos,type)            
+            
+        self.game_objects.add(newsprite)
+        self.bus_objects.add(newsprite)
+    def remove_player(self):
+        self.player.pos = -100,-100
+        
 if __name__ == '__main__':
     pass
 
