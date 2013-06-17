@@ -53,7 +53,10 @@ while done == False:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 done = True
-    
+            elif event.key == pygame.K_p:
+                pygame.image.save(screen, 
+                    "screenshot_%s.png" % pygame.time.get_ticks())
+
     
 
     # Set the screen background
