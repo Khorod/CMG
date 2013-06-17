@@ -1,0 +1,76 @@
+[level]
+tileset = ../img/ground_test.png
+      
+map = ########################...########
+      #.......................p.........#
+      #.................................#
+      #.................................#
+      #.................................#
+      #.................................#
+      #..x...x...x...x...x...x...x...x..#
+      #.................................#
+      #.x...x...x...x...x...x...x..x..x.#
+      #.................................#
+      #A...............................A#
+      #x...x...x...x...x..x...x...x...x.#
+      #.................................#
+      #.................................#
+      #..c.c..c..c......................#
+      #...i......c......................#
+      #..........c......................#
+      #...............A.................#
+      ################.##################
+[.]
+name = floor
+tile = 0, 3
+
+[#]
+name = wall
+tile = 0, 3
+block = true
+wall = true
+rect = 0, 16, 32, 16
+
+[b]
+name = crate
+tile = 0, 3
+block = true
+sprite = ../img/crate.png
+rect = 0, 16, 32, 16
+
+[p]
+name = player
+tile = 0, 3
+block = true
+sprite = ../img/player.png
+rect = 8, 28, 16, 4
+
+[x]
+name = person
+tile = 0,3
+sprite = ../img/player_old.png
+rect = 8, 28, 16, 4
+
+[i]
+name = informant
+tile = 0,3
+sprite = ../img/informant.png
+rect = 8, 28, 16, 4
+
+[c]
+name = cop
+tile = 0,3
+sprite = ../img/cop.png
+rect = 0, 16, 32, 16
+
+[s]
+name = skeleton
+block = true
+sprite = ../img/skeleton.png
+rect = 0, 16, 32, 16
+
+[A]
+name = ATM_machine
+tile = 0,3
+sprite = ../img/ATM.png
+rect = 8, 28, 16, 4
