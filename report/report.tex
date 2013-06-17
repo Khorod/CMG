@@ -53,6 +53,19 @@
 \section{Path Planning}
 \label{sec:Path Planning}
 
+After we created collision detection, we wanted to implement NPCs, non-playable characters. At first these character just walked in a straight line. As this is not very smart and does not get you anywhere, more advanced pathplanning had to be implemented. 
+
+\subsection{Grid-based approach}
+One of the simplest solutions was to work with the grid we already got for the collisions. Every point in this grid was connected to its direct neighbors in a graph. Now we could simply use A* to plan a path in this graph. 
+
+The planning of a path involved converting the pixel position of an NPC to the corresponding tile position, as this was the level the collision map was defined on. Then the path could be planned in these tile positions and could be executed by the NPCs.
+
+\subsection{Navigation Mesh}
+The former solution did work, albeit it was a bit slow. As the goal was to simulate a crowd, slow pathfinding could really become a problem, when dealing with bigger crowds. Thus a more efficient solution had to be found.
+
+Therefore we implemented a navigation mesh for the NPCs to use. By using this mesh instead of all the grid locations, the number of nodes in the planning graph was greatly reduced. In figure HENK an example of the navigation mesh can be seen. 
+
+
 \section{Steering Behavior}
 \label{sec:Steering Behavior}
 
