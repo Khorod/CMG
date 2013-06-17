@@ -40,11 +40,17 @@
 \maketitle
 
 \section{Introduction}
+% TODO background / motivation
+Crowd manipulation is the intentional use of techniques to control or influence the behavior of a crowd such that they take upon a desired action. In the Crowd Manipulation Game (CMG) the player is equipped with artifacts and special abilities which allows him to manipulate the crowd such that he is able to achieve its goal.
 
 % TODO explain pygame
+The game is made using the open source Pygame toolkit\footnote{\url{http://www.pygame.org}}: a set of Python modules designed for writing games.
+
+Section \ref{sec:Design} will discuss the graphical design of the CMG and section \ref{sec:Rendering} will discuss how all the visuals are rendered. In section \ref{sec:Collision Detection} our collision detection is detailed. Section \ref{sec:Path Planning} discusses two approaches to path planning and section \ref{sec:Steering Behavior} explains two approaches to steering behavior. Section \ref{sec:Gameplay} gives an overview of the current state of the game and sections \ref{sec:Discussion} and \ref{sec:Future Work} discuss possible adjustments and extensions. Finally, section \ref{sec:Conclusion} concludes our work.
 
 \section{Design}
 \label{sec:Design}
+% TODO pixal art, \ref{fig:player}
 
 \begin{figure}[h!]
 \centering
@@ -63,7 +69,7 @@ As soon as the rendering worked, we started on the collision detection. As you d
 
 An object is able to move in a direction if it does not result in a collision. If the object moves both horizontally and vertically, then the object is only moved in the direction that does not cause a collision. For example, an object that wants to move both upwards and to the right will only move upwards if there is a collision when moving to the right. This way an object can glide over a wall without the player explicitly having to hold only the valid keys. 
 
-At first every collision was treated in a similar fashion. All objects in the game inherited from a superclass named GameObject, thus making collision detection easy because of polymorphism. However, because there were quite a couple of walls, it also made collision detection a tad slow. Therefore we implemented another system that is quite straightforward: whenever walls lie next to eachother merge them to create a bigger rectangle, on which the collisions are tested.
+At first every collision was treated in a similar fashion. All objects in the game inherited from a superclass named GameObject, thus making collision detection easy because of polymorphism. However, because there were quite a couple of walls, it also made collision detection a tad slow. Therefore we implemented another system that is quite straightforward: whenever walls lie next to each other merge them to create a bigger rectangle, on which the collisions are tested.
 
 Thus there are 2 collision systems:
 \begin{enumerate}
