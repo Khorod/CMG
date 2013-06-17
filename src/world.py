@@ -349,12 +349,12 @@ class Level(object):
         """
         # Draw the game over message
         font = pygame.font.Font(None, 50)
-        text = font.render("Game over!", 1, (255,255,255))   
+        text = font.render("Mission failed!", 1, (255,255,255))   
         textrect = text.get_rect()
         textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
         
         font2 = pygame.font.Font(None, 20)
-        text2 = font2.render("You missed the bus, and weren't able to get to the next level in time :(", 1, (255,255,255))   
+        text2 = font2.render("You missed the bus, and weren't able to get to complete the mission in time :(", 1, (255,255,255))   
         textrect2 = text2.get_rect()
         textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
         
@@ -378,12 +378,12 @@ class Level(object):
         """
         # Draw the game over message
         font = pygame.font.Font(None, 50)
-        text = font.render("You win!", 1, (255,255,255))   
+        text = font.render("Mission accomplished!", 1, (255,255,255))   
         textrect = text.get_rect()
         textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
         
         font2 = pygame.font.Font(None, 20)
-        text2 = font2.render("You were able to get on the bus in time :D! However you got into the wrong bus :(", 1, (255,255,255))   
+        text2 = font2.render("You were able to get on the bus in time! However the bus crashed into a building :(..", 1, (255,255,255))   
         textrect2 = text2.get_rect()
         textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
         
