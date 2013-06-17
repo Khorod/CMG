@@ -110,6 +110,29 @@ def point_dist(a, b):
     """ Distance between two points. """
     return ((a[0]-b[0]) ** 2 + (a[1]-b[1]) ** 2) ** 0.5
 
+def line_intersects_line((x1, y1), (x2, y2), (x3, y3), (x4, y4), segment=False):
+    """Arguments:
+    x1,y1,x2,y2     Coordinates defining first line segment
+    x3,y3,x4,y4     Coordinates defining second line segment
+    segment         If TRUE, intersection test is confined to the given line segments
+                    If FALSE, intersection may occur at any point on the given lines
+
+    Returns:
+    Tuple (intersect_x, intersect_y) if there is an intersection
+    None if there is no intersection
+    
+    Source: http://www.gmlscripts.com/script/lines_intersect"""
+    ua = 0.0
+    ud = float((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1))
+    if ud != 0:
+        ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / ud
+        if segment:
+            ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / ud
+            if ua < 0 or ua > 1 or ub < 0 or ub > 1:
+                return None
+
+    return (x1 + (x2-x1)*ua, y1 + (y2-y1)*ua)
+
 def line_intersects_rect(p0, p1, r):
     """ Check where a line between p1 and p2 intersects
         given axis-aligned rectangle r.
@@ -122,7 +145,7 @@ def line_intersects_rect(p0, p1, r):
         >>> line_intersects_rect((1.0,0.0),(3.0,0.0),(0.0,1.0,3.0,1.0))
         False
     """
-    l,t,r,b = (r[0],r[1],r[0]+r[2],r[1]+r[3])
+    l,t,r,b = (r[0],r[1],r[0]+r[2],r[1]+r[3]) # left, top, right, bottom
     p0x,p0y = p0
     q0x,q0y = p1
     t0,t1  = 0.0, 1.0
