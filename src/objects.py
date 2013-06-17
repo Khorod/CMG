@@ -104,7 +104,7 @@ class Person(GameObject):
 
     def __init__(self, position, image, rect):
         GameObject.__init__(self, position, image, rect)
-        self.final_goal = (10, 40) if position[0] >550 else (1100,40)
+        self.final_goal = (45, position[1]) if position[0] >550 else (1080,position[1])
         self.goal = None
         self.direction = 2
         self.animation = None
@@ -120,6 +120,7 @@ class Person(GameObject):
         self.move_vector = (0, 0)
         self.target_money = None
         self.old_goal_money = None
+        self.start_pos = position
         
     def walk_to_place(self, level, goal):
         """walk to goal in straight line, depending on self.speed"""
@@ -184,7 +185,7 @@ class Person(GameObject):
         if object_list:
             for obj in object_list:
                 if obj is not self:
-                    if isinstance(obj, Person):
+                    if isinstance(obj, Person) and not isinstance(obj,Cop):
                         if not hit_center:
                             if utils.line_intersects_rect(start, center[1],obj.real_rect):
                                 hit_center = True
@@ -300,10 +301,10 @@ class Person(GameObject):
             self.target_money = None
     
     def get_new_final_goal(self, final_goal):
-        if final_goal == (10,40):
-            self.final_goal = (1100,40)
+        if final_goal == (45,self.start_pos[1]):
+            self.final_goal = (1080,self.start_pos[1])
         else:
-            self.final_goal = (10,40)
+            self.final_goal = (45,self.start_pos[1])
             
             
     def update(self, level):
@@ -369,14 +370,99 @@ class Cop(Person):
         Person.__init__(self, pos, image, rect)
 
     def update(self, level):
-        # Logic here!
-        pass
+        self.walk_to_place(level,level.player.pos)
+        if self.real_rect.inflate(2,2).colliderect(level.player):
+            level.lost = 1
         
+        if self.animation is None:
+            self.image = self.frames[self.direction][0]
+        else:
+            try:
+                if self.animation_speed_check():
+                    self.animation.next()
+            except StopIteration:
+                self.animation = None
+                
+class Informant(Person):
+    """Cop object."""
+
+    def __init__(self, pos, image, rect):
+        Person.__init__(self, pos, image, rect)
+        self.speed = 2
+        self.final_goal = (self.start_pos[0]-40, self.start_pos[1]) if self.start_pos[0] >550 else (self.start_pos[0]+40,self.start_pos[1])
+        
+    def get_new_final_goal(self, final_goal):
+        if final_goal == (self.start_pos[0]-40,self.start_pos[1]):
+            self.final_goal = (self.start_pos[0]+40,self.start_pos[1])
+        else:
+            self.final_goal = (self.start_pos[0]-40,self.start_pos[1])
+            
+        
+    def update(self, level):
+       
+        self_pos = utils.Point(self.real_rect.center[0],self.real_rect.center[1])
+                   
+        if not self.path:
+            self.path = level.plan_path(self_pos, self.final_goal)
+        else:           
+            if self.animation is None:
+                self.animation = self.walk_animation()
+            adjusted_pos = utils.Point( self.path[0][0], self.path[0][1]) - self._offset
+            adjusted_pos = adjusted_pos - (10,0) # offset seems to need adjustment
+            self.walk_to_place(level, adjusted_pos) 
+            
+            if self.path:#in case replanning did not yield a path                           
+                if self_pos.dist(self.path[0]) < 10:#slightly bigger range:#self.real_rect.collidepoint(self.path[0]):
+                    del self.path[0]
+                
+            if self.real_rect.collidepoint(self.final_goal): # if the person has reached their final goal
+                if len(self.final_goal) > 1:
+                    self.get_new_final_goal(self.final_goal)#1000, 200) #goto here for now TODO: change; perhaps a patrol list depending where you are in the level
+                    
+        if self.real_rect.inflate(2,2).colliderect(level.player):
+            level.won = 1
+        
+        if self.animation is None:
+            self.image = self.frames[self.direction][0]
+        else:
+            try:
+                if self.animation_speed_check():
+                    self.animation.next()
+            except StopIteration:
+                self.animation = None 
+        """
+        self_pos = utils.Point(self.real_rect.center[0], self.real_rect.center[1])
+        if not self.path:
+            self.path = level.plan_path(self_pos, self.final_goal)
+        else:
+            adjusted_pos = utils.Point( self.path[0][0], self.path[0][1])
+            adjusted_pos = adjusted_pos - (10,0) # offset seems to need adjustment
+            self.walk_to_place(level, adjusted_pos) 
+        print self_pos, self.path[0]
+        if self.path:#in case replanning did not yield a path                           
+            if self_pos.dist(self.path[0]) < 10:#slightly bigger range:#self.real_rect.collidepoint(self.path[0]):
+                del self.path[0]
+                
+        if self.real_rect.collidepoint(self.final_goal): # if the person has reached their final goal
+                if len(self.final_goal) > 1:
+                    self.get_new_final_goal(self.final_goal)#1000, 200) #goto here for now TODO: change; perhaps a patrol list depending where you are in the level
+        if self.real_rect.inflate(2,2).colliderect(level.player):
+            level.won = 1
+        
+        if self.animation is None:
+            self.image = self.frames[self.direction][0]
+        else:
+            try:
+                if self.animation_speed_check():
+                    self.animation.next()
+            except StopIteration:
+                self.animation = None
+        """
 class Money(GameObject):
     """moni moni moni"""
     def __init__(self, pos, image, rect):
         GameObject.__init__(self, pos, image, rect)
-        self.dissapear_timer = 3
+        self.dissapear_timer = 2
         self.start_timer = None
         
     def start_dissapear_timer(self):

@@ -73,6 +73,8 @@ class Level(object):
         self.click_objects = SortedUpdates()
         self.mouse_released = False
         self.bus_objects = SortedUpdates()
+        self.lost = 0
+        self.won = 0
         
         for tile_pos, tile in self.items.iteritems():
             position = (tile_pos[0] * MAP_TILE_WIDTH,
@@ -86,6 +88,10 @@ class Level(object):
                 entity = self.player
             elif tile["name"] == "person": # Create a player
                 entity  = objects.Person(position, sprite, rect)
+            elif tile["name"] == "cop": # Create a player
+                entity  = objects.Cop(position, sprite, rect)
+            elif tile["name"] == "informant": # Create a player
+                entity  = objects.Informant(position, sprite, rect)
             #elif tile["name"] == "wall": # Found a wall
             #    rect.move_ip(position[0], position[1])
             #    self.wall_rects.append(rect)
@@ -383,7 +389,7 @@ class Level(object):
         textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
         
         font2 = pygame.font.Font(None, 20)
-        text2 = font2.render("You were able to get on the bus in time! However the bus crashed into a building :(..", 1, (255,255,255))   
+        text2 = font2.render("Well done agent. We expected nothing less.", 1, (255,255,255))   
         textrect2 = text2.get_rect()
         textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
         
@@ -392,6 +398,11 @@ class Level(object):
         
         pygame.display.flip() # make everything we have drawn on the screen become visible in the window
         
+        pressed = pygame.key.get_pressed()
+        if 1 in pressed:
+            return True
+        else:
+            return False
     def Intro1(self,screen):
     # Draw the scoreboard
         message_screen = pygame.Surface((self.screen_size[0]*0.75,self.screen_size[1]*0.5))
@@ -435,6 +446,154 @@ class Level(object):
         textrect = text.get_rect()
         textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+55
         screen.blit(text, textrect)
+        pygame.display.flip() # make everything we have drawn on the screen become visible in the window
+        
+        pressed = pygame.key.get_pressed()
+        if 1 in pressed:
+            return True
+        else:
+            return False
+            
+    def Intro2(self,screen):
+    # Draw the scoreboard
+        message_screen = pygame.Surface((self.screen_size[0]*0.75,self.screen_size[1]*0.5))
+        message_screen.set_alpha(128)
+        message_screen.fill((0,0,0))
+        screen.blit(message_screen, (self.screen_size[0]*0.125,self.screen_size[1]*0.25))
+        """
+        font = pygame.font.Font(None, 100)
+        text = font.render("Score: " + str(3), 1, (255,255,255  ))
+        textrect = text.get_rect()
+        textrect.left, textrect.top = 0,0
+        screen.blit(text, textrect)    
+        """
+        # Draw the game over message
+        font = pygame.font.Font(None, 50)
+        text = font.render("Mission II", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
+        screen.blit(text, textrect)
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("You have arrived at the scene. Your mission here is to capture an enemy informant, who is located in this facility.", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2-5
+        screen.blit(text2, textrect2)
+        
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("The informant will be wearing a long red coat. It is vital that we acquire this informant for interrogation.", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
+        screen.blit(text2, textrect2)
+        
+        font = pygame.font.Font(None, 20)
+        text = font.render("Your equipment has been issued with a close range sedative gas, and getting close enough to the target will render", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+25
+        screen.blit(text, textrect)
+        
+        font = pygame.font.Font(None, 20)
+        text = font.render("the target easy to capture and interrogate back at base. Additionally you have the ATM hack tool at your disposal.", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+40
+        screen.blit(text, textrect)
+
+        font = pygame.font.Font(None, 20)
+        text = font.render("The authorities have increased security in this facility. Do not get caught. Good luck agent.", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+55
+        screen.blit(text, textrect)
+        
+        font = pygame.font.Font(None, 20)
+        text = font.render("Press any key to continue...", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+70
+        screen.blit(text, textrect)
+        pygame.display.flip() # make everything we have drawn on the screen become visible in the window
+        
+        pressed = pygame.key.get_pressed()
+        if 1 in pressed:
+            return True
+        else:
+            return False
+            
+    def win2(self,screen):
+    # Draw the scoreboard
+        message_screen = pygame.Surface((self.screen_size[0]/2,self.screen_size[1]/2))
+        message_screen.set_alpha(128)
+        message_screen.fill((0,0,0))
+        screen.blit(message_screen, (self.screen_size[0]/4,self.screen_size[1]/4))
+        """
+        font = pygame.font.Font(None, 100)
+        text = font.render("Score: " + str(3), 1, (255,255,255  ))
+        textrect = text.get_rect()
+        textrect.left, textrect.top = 0,0
+        screen.blit(text, textrect)    
+        """
+        # Draw the game over message
+        font = pygame.font.Font(None, 50)
+        text = font.render("Mission accomplished!", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("Well done agent. The suspect is being escorted to the base for interrogation.", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
+        
+        screen.blit(text, textrect)
+        screen.blit(text2, textrect2)
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("Your work here is done.", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+25
+        
+        screen.blit(text2, textrect2)
+        
+        pygame.display.flip() # make everything we have drawn on the screen become visible in the window
+        
+        pressed = pygame.key.get_pressed()
+        if 1 in pressed:
+            return True
+        else:
+            return False
+            
+    def lose2(self,screen):
+    # Draw the scoreboard
+        message_screen = pygame.Surface((self.screen_size[0]/2,self.screen_size[1]/2))
+        message_screen.set_alpha(128)
+        message_screen.fill((0,0,0))
+        screen.blit(message_screen, (self.screen_size[0]/4,self.screen_size[1]/4))
+        """
+        font = pygame.font.Font(None, 100)
+        text = font.render("Score: " + str(3), 1, (255,255,255  ))
+        textrect = text.get_rect()
+        textrect.left, textrect.top = 0,0
+        screen.blit(text, textrect)    
+        """
+        # Draw the game over message
+        font = pygame.font.Font(None, 50)
+        text = font.render("Mission failed!", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("You have come too close to the authorities. We will have to terminate you.", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
+        
+        screen.blit(text, textrect)
+        screen.blit(text2, textrect2)
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("Your work here is done.", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+25
+        
+        screen.blit(text2, textrect2)
+        
         pygame.display.flip() # make everything we have drawn on the screen become visible in the window
         
         pressed = pygame.key.get_pressed()

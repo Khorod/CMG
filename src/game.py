@@ -36,6 +36,8 @@ level = world.Level(screen_size, 'level_wonly.map')
 #Loop until the user clicks the close button.
 done = False
 
+#current level
+level_nr = 1
 #freeze when we win or lose
 freeze = False
 #game started after intro
@@ -51,8 +53,7 @@ while done == False:
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 done = True
-
-   
+    
     
 
     # Set the screen background
@@ -94,20 +95,39 @@ while done == False:
     if dx is not 0 or dy is not 0:
         if level.player.animation is None:
             level.player.animation = level.player.walk_animation()
-    level.move_player(dx*2, dy*2)
+    if not freeze:
+        level.move_player(dx*2, dy*2)
     level.player.update(level)
 
-   
+
     dirty = level.game_objects.draw(screen)
     overlays.draw(screen)
-    pygame.display.update(dirty)
-
+    if not freeze:
+        pygame.display.update(dirty)
+    
     if not game_started:
+        any_key_pressed = False 
         freeze = True
-        any_key_pressed = level.Intro1(screen)
+        if level_nr == 1:
+            any_key_pressed = level.Intro1(screen)
+        if level_nr == 2:
+            any_key_pressed = level.Intro2(screen)
+            
+            
+        """
+            done_reading = level.win(screen)
+            if done_reading:
+                done_reading = False
+                time.sleep(1)
+                level = world.Level(screen_size, 'level2.map')
+                any_key_pressed = level.Intro2(screen)
+                print "in reading loop"
+                print any_key_pressed
+        """        
         if any_key_pressed:
             freeze = False
             game_started = True
+            any_key_pressed = False
             
     # Get mouse position
     click = pygame.mouse.get_pressed()
@@ -145,12 +165,27 @@ while done == False:
     # Limit to 60 frames per second
     clock.tick(30)
     
-    if not level.bus_objects:
-        freeze = True
-        if level.player.pos[0] < 0: # player is teleported outside window when he enters bus, dirty hack, i know..
-            level.win(screen)
-        else:
-            level.lose(screen)
+    if level_nr == 1:
+        if not level.bus_objects:
+            freeze = True
+            if level.player.pos[0] < 0: # player is teleported outside window when he enters bus, dirty hack, i know..
+                done_reading = level.win(screen)
+                if done_reading:
+                    time.sleep(0.5)
+                    level_nr +=1
+                    game_started = False
+                    level = world.Level(screen_size, 'level2.map')
+            else:
+                level.lose(screen)
+                
+    if level_nr == 2:
+        if level.lost == 1:
+            freeze = True
+            level.lose2(screen)
+        if level.won == 1:
+            freeze = True
+            level.win2(screen)
+            #level.won = 0  
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
 
