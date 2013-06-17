@@ -93,7 +93,7 @@ Therefore we implemented a navigation mesh for the NPCs to use. By using this me
 The pathfinding plans a path around the static walls in the level. There are however a couple of dynamic objects in our world as well, e.g. the player and NPCs. Instead of making the pathplanning significantly more difficult, we use steering behaviors to avoid the dynamic obstacles. 
 
 \subsection{Boids approach}
-The first thing we tried was to implement a similar system to the Boids that were discussed in class\ref{Boidsding}. The individuals were able to keep their distance, but it looked rather unnatural. Another problem with this approach was that sometimes one individual would push another away from its goal, while that other individual was pushing him. Thus both never reached their goals.
+The first thing we tried was to implement a similar system to the Boids that were discussed in class\cite{reynolds1987flocks}. The individuals were able to keep their distance, but it looked rather unnatural. Another problem with this approach was that sometimes one individual would push another away from its goal, while that other individual was pushing him. Thus both never reached their goals.
 
 Because this didn't work out as we planned we tried another approach.
 
