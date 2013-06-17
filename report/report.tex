@@ -50,6 +50,16 @@
 \section{Collision Detection}
 \label{sec:Collision Detection}
 
+As soon as the rendering worked, we started on the collision detection. As you don't want your player to be able to walk through walls. 
+
+At first every collision was treated in a similar fashion. All objects in the game inherited from a superclass named GameObject, thus making collision detection easy because of polymorphism. However, because there were quite a couple of walls, it also made collision detection a tad slow. Therefore we implemented another system that is quite straightforward: whenever walls lie next to eachother merge them to create a bigger rectangle, on which the collisions are tested.
+
+Thus there are 2 collision systems:
+\begin{enumerate}
+\item One system for GameObjects
+\item One system for static wall collisions
+\end{enumerate}
+
 \section{Path Planning}
 \label{sec:Path Planning}
 
@@ -68,6 +78,16 @@ Therefore we implemented a navigation mesh for the NPCs to use. By using this me
 
 \section{Steering Behavior}
 \label{sec:Steering Behavior}
+
+The pathfinding plans a path around the static walls in the level. There are however a couple of dynamic objects in our world as well, e.g. the player and NPCs. Instead of making the pathplanning significantly more difficult, we use steering behaviors to avoid the dynamic obstacles. 
+
+\subsection{Boids approach}
+The first thing we tried was to implement a similar system to the Boids that were discussed in class\ref{Boidsding}. The individuals were able to keep their distance, but it looked rather unnatural. Another problem with this approach was that sometimes one individual would push another away from its goal, while that other individual was pushing him. Thus both never reached their goals.
+
+Because this didn't work out as we planned we tried another approach.
+
+\subsection{Scanline approach}
+The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right. Based on which lines trigger, the heading direction is altered.
 
 \section{Discussion}
 \label{sec:Discussion}
