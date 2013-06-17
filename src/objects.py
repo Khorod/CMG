@@ -436,6 +436,7 @@ class Bus_LR(GameObject):
         self_endpos = utils.Point(self.endpos[0],self.endpos[1])
         if self_pos.dist(self_endpos) < self.speed:
             level.game_objects.remove(self)
+            level.bus_objects.remove(self)
         if self.rect.inflate(10,10).colliderect(level.player.real_rect) and self.type == 3:
             level.remove_player()
         

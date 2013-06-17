@@ -36,8 +36,10 @@ level = world.Level(screen_size, 'level_wonly.map')
 #Loop until the user clicks the close button.
 done = False
 
+#freeze when we win or lose
+freeze = False
 #add a bus!, that goes left to right
-level.create_bus_left_to_right((-150,100), (1500,100), 5)
+level.create_bus_left_to_right((-150,100), (1130,100), 5)
 
 # Main Program Loop
 while done == False:
@@ -66,7 +68,8 @@ while done == False:
     screen.blit(background, (0, 0))
 
     level.game_objects.clear(screen, background)
-    level.update_objects()
+    if not freeze:
+        level.update_objects()
     
     level.mouse_control() #mouse controls, like dropping object into level
     # Handle player movement
@@ -92,6 +95,7 @@ while done == False:
     level.move_player(dx*2, dy*2)
     level.player.update(level)
 
+   
     dirty = level.game_objects.draw(screen)
     overlays.draw(screen)
     pygame.display.update(dirty)
@@ -131,7 +135,13 @@ while done == False:
 
     # Limit to 60 frames per second
     clock.tick(60)
-
+    
+    if not level.bus_objects:
+        freeze = True
+        if level.player.pos[0] < 0: # player is teleported outside window when he enters bus, dirty hack, i know..
+            level.win(screen)
+        else:
+            level.lose(screen)
     # Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
 
