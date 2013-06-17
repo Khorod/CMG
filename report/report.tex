@@ -16,6 +16,9 @@
 \usepackage{graphicx}
 \usepackage{array}
 
+\usepackage{caption}
+\usepackage{subcaption}
+
 \usepackage{rotating}
 
 \usepackage[english]{babel}
@@ -43,14 +46,22 @@
 \section{Design}
 \label{sec:Design}
 
+\begin{figure}[h!]
+\centering
+\includegraphics[width = 1.0 \textwidth]{../img/player.png}
+\caption{Player sprites.}
+\label{fig:player}
+\end{figure}
+
 \section{Rendering}
 \label{sec:Rendering}
 % TODO tileset
 
 \section{Collision Detection}
 \label{sec:Collision Detection}
+As soon as the rendering worked, we started on the collision detection. As you don't want your player to be able to walk through walls. Each sprite has a rectangle that represents the boundaries of the object. A collision is detected by determining whether there is an overlap between two rectangles. The overlap between two rectangles is calculated by TODO
 
-As soon as the rendering worked, we started on the collision detection. As you don't want your player to be able to walk through walls. 
+An object is able to move in a direction if it does not result in a collision. If the object moves both horizontally and vertically, then the object is only moved in the direction that does not cause a collision. For example, an object that wants to move both upwards and to the right will only move upwards if there is a collision when moving to the right. This way an object can glide over a wall without the player explicitly having to hold only the valid keys. 
 
 At first every collision was treated in a similar fashion. All objects in the game inherited from a superclass named GameObject, thus making collision detection easy because of polymorphism. However, because there were quite a couple of walls, it also made collision detection a tad slow. Therefore we implemented another system that is quite straightforward: whenever walls lie next to eachother merge them to create a bigger rectangle, on which the collisions are tested.
 
@@ -88,6 +99,63 @@ Because this didn't work out as we planned we tried another approach.
 
 \subsection{Scanline approach}
 The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right. Based on which lines trigger, the heading direction is altered.
+
+\section{Gameplay}
+\label{sec:Gameplay}
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{../screenshots/screenshot_5336.png}
+                \caption{Start of the game.}
+                \label{fig:screenshot01}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{../screenshots/screenshot_9475.png}
+                \caption{Drop some money.}
+                \label{fig:screenshot02}
+        \end{subfigure}
+
+        %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{../screenshots/screenshot_18178.png}
+                \caption{Some more money.}
+                \label{fig:screenshot03}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{../screenshots/screenshot_23227.png}
+                \caption{More money!}
+                \label{fig:screenshot04}
+        \end{subfigure}
+        %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{../screenshots/screenshot_31108.png}
+                \caption{Get inside the bus.}
+                \label{fig:screenshot05}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{../screenshots/screenshot_62502.png}
+                \caption{End of the game.}
+                \label{fig:screenshot63}
+        \end{subfigure}
+
+        \caption{Typical gameplay}\label{fig:gameplay}
+\end{figure}
 
 \section{Discussion}
 \label{sec:Discussion}
