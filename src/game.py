@@ -38,6 +38,8 @@ done = False
 
 #freeze when we win or lose
 freeze = False
+#game started after intro
+game_started = False
 #add a bus!, that goes left to right
 level.create_bus_left_to_right((-150,100), (1130,100), 5)
 
@@ -57,7 +59,7 @@ while done == False:
     screen.fill(white)
 
     # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
-
+    
     background, overlay_dict = level.render()
     overlays = pygame.sprite.RenderUpdates()
     for (x, y), image in overlay_dict.iteritems():
@@ -68,9 +70,9 @@ while done == False:
     screen.blit(background, (0, 0))
 
     level.game_objects.clear(screen, background)
-    if not freeze:
+    if  not freeze:
         level.update_objects()
-    
+
     level.mouse_control() #mouse controls, like dropping object into level
     # Handle player movement
     pressed = pygame.key.get_pressed()
@@ -100,9 +102,16 @@ while done == False:
     overlays.draw(screen)
     pygame.display.update(dirty)
 
+    if not game_started:
+        freeze = True
+        any_key_pressed = level.Intro1(screen)
+        if any_key_pressed:
+            freeze = False
+            game_started = True
+            
     # Get mouse position
     click = pygame.mouse.get_pressed()
-
+    
     if DEBUG:
         level.draw_nav_mesh(screen)
         for obj in level.game_objects:
@@ -134,7 +143,7 @@ while done == False:
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
 
     # Limit to 60 frames per second
-    clock.tick(60)
+    clock.tick(30)
     
     if not level.bus_objects:
         freeze = True

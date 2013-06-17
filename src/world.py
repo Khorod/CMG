@@ -4,6 +4,7 @@ import astar
 import ConfigParser
 import objects
 import utils
+import random
 
 MAP_TILE_WIDTH = 32 # TODO read from ini file
 MAP_TILE_HEIGHT = 16
@@ -390,6 +391,57 @@ class Level(object):
         screen.blit(text2, textrect2)
         
         pygame.display.flip() # make everything we have drawn on the screen become visible in the window
+        
+    def Intro1(self,screen):
+    # Draw the scoreboard
+        message_screen = pygame.Surface((self.screen_size[0]*0.75,self.screen_size[1]*0.5))
+        message_screen.set_alpha(128)
+        message_screen.fill((0,0,0))
+        screen.blit(message_screen, (self.screen_size[0]*0.125,self.screen_size[1]*0.25))
+        """
+        font = pygame.font.Font(None, 100)
+        text = font.render("Score: " + str(3), 1, (255,255,255  ))
+        textrect = text.get_rect()
+        textrect.left, textrect.top = 0,0
+        screen.blit(text, textrect)    
+        """
+        # Draw the game over message
+        font = pygame.font.Font(None, 50)
+        text = font.render("Mission I", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
+        screen.blit(text, textrect)
+        
+        font2 = pygame.font.Font(None, 20)
+        text2 = font2.render("Greetings agent, your mission today is to catch the next bus. Failing to catch the next bus will result in", 1, (255,255,255))   
+        textrect2 = text2.get_rect()
+        textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
+        screen.blit(text2, textrect2)
+        
+        font = pygame.font.Font(None, 20)
+        text = font.render("failure of the mission and your termination. Your movements are assigned to WASD, and you have permission to use", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+25
+        screen.blit(text, textrect)
+        
+        font = pygame.font.Font(None, 20)
+        text = font.render("the hacking tool which is capable of manipulating ATM machines, activated by left mouse button. Good luck agent.", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+40
+        screen.blit(text, textrect)
+
+        font = pygame.font.Font(None, 20)
+        text = font.render("Press any key to continue...", 1, (255,255,255))   
+        textrect = text.get_rect()
+        textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2+55
+        screen.blit(text, textrect)
+        pygame.display.flip() # make everything we have drawn on the screen become visible in the window
+        
+        pressed = pygame.key.get_pressed()
+        if 1 in pressed:
+            return True
+        else:
+            return False
 if __name__ == '__main__':
     pass
 
