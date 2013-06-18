@@ -580,7 +580,7 @@ class Level(object):
         textrect.centerx, textrect.centery = self.screen_size[0]/2,self.screen_size[1]/2-40
         
         font2 = pygame.font.Font(None, 20)
-        text2 = font2.render("You have come too close to the authorities. We will have to terminate you.", 1, (255,255,255))   
+        text2 = font2.render("You have come too close to the authorities. You will be terminated shortly.", 1, (255,255,255))   
         textrect2 = text2.get_rect()
         textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+10
         
@@ -588,7 +588,7 @@ class Level(object):
         screen.blit(text2, textrect2)
         
         font2 = pygame.font.Font(None, 20)
-        text2 = font2.render("Your work here is done.", 1, (255,255,255))   
+        text2 = font2.render("Have a nice day.", 1, (255,255,255))   
         textrect2 = text2.get_rect()
         textrect2.centerx, textrect2.centery = self.screen_size[0]/2,self.screen_size[1]/2+25
         
