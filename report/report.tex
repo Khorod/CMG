@@ -194,7 +194,7 @@ Figure \ref{fig:gameplay} shows some typical gameplay. A bus appears on the left
         \begin{subfigure}[b]{0.4\textwidth}
                 \centering
                 \includegraphics[width=\textwidth]{../screenshots/screenshot_62502.png}
-                \caption{End of the game.}
+                \caption{End of the level.}
                 \label{fig:screenshot06}
         \end{subfigure}
 
@@ -217,6 +217,8 @@ In future work we plan to add more abilities, more types of npcs and of course m
 In this rather short period of time, we have created a stable game engine, which can be used to create bird-view perspective games, and includes collision detection for each of the objects. The engine includes a renderer that can cope with depth and overlays. For the NPCs there is a navigation mesh they can use to get around. 
 
 We created an minigame with this engine that tries to model a crowd using steering behaviors, and civilians in the CMG will avoid collision with other agents, much like a human would do. The game features two levels, three types of npcs and currently one ability for the player to use. If the player fails to complete the second level, he will be terminated and will not get another chance to complete his mission.
+
+The NPCs find their way around the map using the navigation mesh for nodes, and Astar to plan a path on these nodes. The civilians avoid collision with each other by using steering behavior which is achieved by altering the angle of the civilian depending on a cone in front of the civilian, making the agents curve around each other.
 
 
 \bibliographystyle{plainnat}
