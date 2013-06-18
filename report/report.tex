@@ -55,6 +55,13 @@ Section \ref{sec:Design} will discuss the graphical design of the CMG and sectio
 \label{sec:Design}
 % TODO pixal art, \ref{fig:player}
 
+Our game engine consist of several classes and a main loop. Our structure allows for an easy object oriented extension. 
+
+The primary class for the objects in the game is the GameObject class. Every object in the game should be a subclass of GameObject. 
+
+The engine keeps track of a list of GameObjects. It also has an Level instance. The Level object contains the information for one level. Things such as what GameObjects should be created where and the locations of walls are stored in the Level class. The Level class also contains code for collision checking and moving around as will be discussed in more detail in sections \ref{sec:Collision Detection} and \ref{sec:Path Planning}.
+
+The main loop dispatches a slice of computation time to each object, so that it can perform its logic. After each GameObject has had their slice, everything is drawn to the screen.
 
 \section{Rendering}
 \label{sec:Rendering}
@@ -73,9 +80,6 @@ Section \ref{sec:Design} will discuss the graphical design of the CMG and sectio
 \label{fig:walls}
 \end{figure}
 
-
-The first thing that had to be done, was the ability to show things on the screen. To this end, we implemented our own renderer.
-
 In simple top-down games you can draw almost in arbitrary order. However, because we use a bird-view perspective, care has to be taken when drawing things. Some objects obscure other objects and therefore have to be drawn after the object they are obstructing. Our renderer takes care of this. It sorts all objects based on their depth and draws them in the correct order.
 
 Next to drawing everything in order, our renderer is able to handle tilesets. This way you can use 1 file for all images of one object. See for example the tileset of the player in figure \ref{fig:player}. The renderer selects the right subframe to draw, based on the direction and animation-counter.
@@ -87,7 +91,7 @@ For the walls the tileset is shown in figure \ref{fig:walls}. The renderer has a
 
 \section{Collision Detection}
 \label{sec:Collision Detection}
-As soon as the rendering worked, we started on the collision detection. As you don't want your player to be able to walk through walls. Each sprite has a rectangle that represents the boundaries of the object. A collision is detected by determining whether there is an overlap between two rectangles. The overlap between two rectangles is calculated by pygame's collidesrect(). In some cases it is desirable to inflate the rectangle to detect a collision before the objects actually collide,
+As soon as the rendering worked, we started on the collision detection, because you don't want your player to be able to walk through walls. Each sprite has a rectangle that represents the boundaries of the object. A collision is detected by determining whether there is an overlap between two rectangles. The overlap between two rectangles is calculated by pygame's collidesrect(). In some cases it is desirable to inflate the rectangle to detect a collision before the objects actually collide,
 
 An object is able to move in a direction if it does not result in a collision. If the object moves both horizontally and vertically, then the object is only moved in the direction that does not cause a collision. For example, an object that wants to move both upwards and to the right will only move upwards if there is a collision when moving to the right and no collision when moving upwards. This way an object can glide over a wall without the player explicitly having to hold only the valid keys. 
 
