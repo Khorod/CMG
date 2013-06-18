@@ -32,7 +32,7 @@
 
 
 \title{Crowd Manipulation Game\\ \normalsize{Game Programming}}
-\author{Steven Laan\\UvAnetID: 6036031\\\url{S.Laan@uva.nl} \and Michael Cabot\\UvAnetID: 6047262\\\url{michael.cabot@uva.nl} \and Richard Rozeboom\\UvAnetID: 6173292\\\url{HyperSqual@gmail.com}}
+\author{Steven Laan\\UvAnetID: 6036031\\\url{S.Laan@uva.nl} \and Michael Cabot\\UvAnetID: 6047262\\\url{Michael.A.Cabot@gmail.com} \and Richard Rozeboom\\UvAnetID: 6173292\\\url{HyperSqual@gmail.com}}
 \date{\today}
 
 \begin{document}
@@ -142,7 +142,7 @@ The first thing we tried was to implement a similar system to the Boids that wer
 Because this did not work out as we planned we tried another approach.
 
 \subsection{Scanline approach}
-The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right, forming an arc in front of the agent. Based on which lines are triggered, the heading direction is altered, such that the detected entity is being avoided, while still heading towards the destination. When an entity is touched by one of the lines, the turning angle increases incrementally to a certain amount. When the entity is no longer in the cone of the agent, the turning angle gradually decreases until it is back to no turning at all. This will make agents make a curve around other agents, mimicking human steering behavior.
+The scanline approach employs ray casting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right, forming an arc in front of the agent. Based on which lines are triggered, the heading direction is altered, such that the detected entity is being avoided, while still heading towards the destination. When an entity is touched by one of the lines, the turning angle increases incrementally to a certain amount. When the entity is no longer in the cone of the agent, the turning angle gradually decreases until it is back to no turning at all. This will make agents make a curve around other agents, mimicking human steering behavior.
 
 \section{Gameplay}
 \label{sec:Gameplay}
@@ -210,7 +210,7 @@ Another problem when using ray casting is the coverage. Since we use three rays 
 
 \section{Future Work}
 \label{sec:Future Work}
-In future work we plan to add more abilities, more types of NPCs and of course more levels and level elements. Abilities would be made more advanced than they are currently, such as items that attract civilians from a certain distance, or items that will only cause certain types of NPCs to be attracted, such as donuts for the police. A an item that repels people can also be a fun game mechanic, such as a stink-bomb or explosions that will make the people run in the opposite direction. Currently the CMG has four types of characters, which we could expand upon. More types of civilians can be added for more variety, such as children, elderly which each will move at different speeds. Furthermore, because we have the level editor, we are able to create more levels relatively easily, however level elements are also needed to create versatile gameplay. For example stoplights which can be 'hacked' to create a traffic accident, or commercial screens that can be hacked to the advantage of the player, and other electronic devices such as cellphones, gates, fire alarms.
+In future work we plan to add more abilities, more types of NPCs and of course more levels and level elements. Abilities would be made more advanced than they are currently, such as items that attract civilians from a certain distance, or items that will only cause certain types of NPCs to be attracted, such as donuts for the police. An item that repels people can also be a fun game mechanic, such as a stink-bomb or explosions that will make the people run in the opposite direction. Currently the CMG has four types of characters, which we could expand upon. More types of civilians can be added for more variety, such as children, elderly which each will move at different speeds. Furthermore, because we have the level editor, we are able to create more levels relatively easily, however level elements are also needed to create versatile gameplay. For example stoplights which can be `hacked' to create a traffic accident, or commercial screens that can be hacked to the advantage of the player, and other electronic devices such as cellphones, gates, fire alarms.
 
 \section{Conclusion}
 \label{sec:Conclusion}
@@ -219,7 +219,7 @@ In this rather short period of time, we have created a stable game engine, which
 
 We created an minigame with this engine that tries to model a crowd using steering behaviors, and civilians in the CMG will avoid collision with other agents, much like a human would do. The game features two levels, three types of NPCs and currently one ability for the player to use. If the player fails to complete the second level, he will be terminated and will not get another chance to complete his mission.
 
-The NPCs find their way around the map using the navigation mesh for nodes, and Astar to plan a path on these nodes. The civilians avoid collision with each other by using steering behavior which is achieved by altering the angle of the civilian depending on a cone in front of the civilian, making the agents curve around each other.
+The NPCs find their way around the map using the navigation mesh for nodes, and A* to plan a path on these nodes. The civilians avoid collision with each other by using steering behavior which is achieved by altering the angle of the civilian depending on a cone in front of the civilian, making the agents curve around each other.
 
 
 \bibliographystyle{plainnat}
