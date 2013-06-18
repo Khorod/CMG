@@ -96,7 +96,7 @@ For the walls the tileset is shown in figure \ref{fig:walls}. The renderer has a
 
 \section{Collision Detection}
 \label{sec:Collision Detection}
-As soon as the rendering worked, we started on the collision detection, because you don't want your player to be able to walk through walls. Each sprite has a rectangle that represents the boundaries of the object. A collision is detected by determining whether there is an overlap between two rectangles. The overlap between two rectangles is calculated by pygame's collidesrect(). In some cases it is desirable to inflate the rectangle to detect a collision before the objects actually collide,
+As soon as the rendering worked, we started on the collision detection, because you don't want your player to be able to walk through walls. Each sprite has a rectangle that represents the boundaries of the object. A collision is detected by determining whether there is an overlap between two rectangles. The overlap between two rectangles is calculated by pygame's \textit{collidesrect()}. In some cases it is desirable to inflate the rectangle to detect a collision before the objects actually collide,
 
 An object is able to move in a direction if it does not result in a collision. If the object moves both horizontally and vertically, then the object is only moved in the direction that does not cause a collision. For example, an object that wants to move both upwards and to the right will only move upwards if there is a collision when moving to the right and no collision when moving upwards. This way an object can glide over a wall without the player explicitly having to hold only the valid keys. 
 
