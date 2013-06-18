@@ -206,14 +206,15 @@ Figure \ref{fig:gameplay} shows some typical gameplay. A bus appears on the left
 
 \section{Future Work}
 \label{sec:Future Work}
-In future work we plan to add more abilities, more types of npcs and of course more levels and level elements. Abilities would be made more advanced than they are currently, such as items that attract civilians from a certain distance, or items that will only cause certain types of npcs to be attracted, such as a donut for the police. A an item that repels people can also be a fun game mechanic, such as a stink-bomb or explosions that will make the people run in the opposite direction. Currently the CMG has four types of characters, which we could expand upon. More types of civilians can be added for more variety, such as children, elderly which each will move at different speeds. Furthermore, because we have the level editor, we are able to create more levels relatively easily, however level elements are also needed to create versatile gameplay. For example stoplights which can be 'hacked' to create a traffic accident, or commercial screens that can be hacked to the advantage of the player, and other electronic devices such as cellphones, gates, fire alarms.
+In future work we plan to add more abilities, more types of npcs and of course more levels and level elements. Abilities would be made more advanced than they are currently, such as items that attract civilians from a certain distance, or items that will only cause certain types of npcs to be attracted, such as donuts for the police. A an item that repels people can also be a fun game mechanic, such as a stink-bomb or explosions that will make the people run in the opposite direction. Currently the CMG has four types of characters, which we could expand upon. More types of civilians can be added for more variety, such as children, elderly which each will move at different speeds. Furthermore, because we have the level editor, we are able to create more levels relatively easily, however level elements are also needed to create versatile gameplay. For example stoplights which can be 'hacked' to create a traffic accident, or commercial screens that can be hacked to the advantage of the player, and other electronic devices such as cellphones, gates, fire alarms.
 
 \section{Conclusion}
 \label{sec:Conclusion}
 
-In this rather short period of time, we created a stable game engine, which can be used to create bird-view perspective games. The engine includes a renderer that can cope with depth and overlays. For the NPCs there is a navigation mesh they can use to get around. 
+In this rather short period of time, we have created a stable game engine, which can be used to create bird-view perspective games, and includes collision detection for each of the objects. The engine includes a renderer that can cope with depth and overlays. For the NPCs there is a navigation mesh they can use to get around. 
 
-We created an minigame with this engine that tries to model a crowd using steering behaviors.
+We created an minigame with this engine that tries to model a crowd using steering behaviors, and civilians in the CMG will avoid collision with other agents, much like a human would do. The game features two levels, three types of npcs and currently one ability for the player to use. If the player fails to complete the second level, he will be terminated and will not get another chance to complete his mission.
+
 
 \bibliographystyle{plainnat}
 \bibliography{references}
