@@ -95,8 +95,14 @@ The planning of a path involved converting the pixel position of an NPC to the c
 \subsection{Navigation Mesh}
 The former solution did work, albeit it was a bit slow. As the goal was to simulate a crowd, slow pathfinding could really become a problem, when dealing with bigger crowds. Thus a more efficient solution had to be found.
 
-Therefore we implemented a navigation mesh for the NPCs to use. By using this mesh instead of all the grid locations, the number of nodes in the planning graph was greatly reduced. In figure HENK an example of the navigation mesh can be seen. 
+Therefore we implemented a navigation mesh for the NPCs to use. By using this mesh instead of all the grid locations, the number of nodes in the planning graph was greatly reduced. In figure \ref{fig:mesh} an example of the navigation mesh can be seen. 
 
+\begin{figure}[h!]
+\centering
+\includegraphics[width = 1.0 \textwidth]{../screenshots/screenshot_16920.png}
+\caption{The navigaton mesh is shown in green. The rectangles used for collision detection are shown in red.}
+\label{fig:mesh}
+\end{figure}
 
 \section{Steering Behavior}
 \label{sec:Steering Behavior}
