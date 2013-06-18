@@ -141,7 +141,7 @@ The first thing we tried was to implement a similar system to the Boids that wer
 Because this did not work out as we planned we tried another approach.
 
 \subsection{Scanline approach}
-The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right, forming a cone in front of the agent. Based on which lines are triggered, the heading direction is altered, such that the detected entity is being avoided, while still heading towards the destination. When an entity is touched by one of the lines, the turning angle increases incrementally to a certain amount. When the entity is no longer in the cone of the agent, the turning angle gradually decreases until it is back to no turning at all. This will make agents make a curve around other agents, mimicking human steering behavior.
+The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right, forming an arc in front of the agent. Based on which lines are triggered, the heading direction is altered, such that the detected entity is being avoided, while still heading towards the destination. When an entity is touched by one of the lines, the turning angle increases incrementally to a certain amount. When the entity is no longer in the cone of the agent, the turning angle gradually decreases until it is back to no turning at all. This will make agents make a curve around other agents, mimicking human steering behavior.
 
 \section{Gameplay}
 \label{sec:Gameplay}
@@ -203,6 +203,9 @@ Figure \ref{fig:gameplay} shows some typical gameplay. A bus appears on the left
 
 \section{Discussion}
 \label{sec:Discussion}
+Our steering behavior, which makes use of ray casting, offers a simplistic approach to avoiding collisions between NPCs. This simplicity comes at the cost of being inaccurate and error-prone. For starters, a ray that intersects with an object's rectangle only stores that there was an intersection but not where this intersection occurred. This speeds up the process as the search for intersections can be stopped once one is detected. However, this means that a NPC has no way of differentiation between an object that lies far away and an object that lies nearby. This information could be utilized by conditioning the steering behavior of a NPC of the distance to the intersection. 
+
+Another problem when using ray casting is the coverage. Since we use three rays to detect intersections it is possible for an object to lie exactly between two rays of a NPC and still not be detected. This problem would solved by using an arc to detect the intersection between object. Of course, this would greatly increase the computational costs of the steering behavior.
 
 \section{Future Work}
 \label{sec:Future Work}
