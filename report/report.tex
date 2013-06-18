@@ -55,16 +55,33 @@ Section \ref{sec:Design} will discuss the graphical design of the CMG and sectio
 \label{sec:Design}
 % TODO pixal art, \ref{fig:player}
 
-\begin{figure}[h!]
+
+\section{Rendering}
+\label{sec:Rendering}
+
+\begin{figure}
 \centering
-\includegraphics[width = 1.0 \textwidth]{../img/player.png}
+\includegraphics{../img/player.png}
 \caption{Player sprites.}
 \label{fig:player}
 \end{figure}
 
-\section{Rendering}
-\label{sec:Rendering}
-\includegraphics[width = 1.0 \textwidth]{../img/ground_test.png}
+\begin{figure}
+\centering
+\includegraphics{../img/ground_test.png}
+\caption{Player sprites.}
+\label{fig:walls}
+\end{figure}
+
+
+The first thing that had to be done, was the ability to show things on the screen. To this end, we implemented our own renderer.
+
+In simple top-down games you can draw almost in arbitrary order. However, because we use a bird-view perspective, care has to be taken when drawing things. Some objects obscure other objects and therefore have to be drawn after the object they are obstructing. Our renderer takes care of this. It sorts all objects based on their depth and draws them in the correct order.
+
+Next to drawing everything in order, our renderer is able to handle tilesets. This way you can use 1 file for all images of one object. See for example the tileset of the player in figure \ref{fig:player}. The renderer selects the right subframe to draw, based on the direction and animation-counter.
+
+For the walls the tileset is shown in figure \ref{fig:walls}. The renderer has a dedicated section for the drawing of static objects, such as walls. Using the tilesets the renderer is able to create seamlessly connected walls.
+
 
 % TODO tileset
 
