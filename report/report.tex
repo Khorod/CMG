@@ -47,7 +47,7 @@ Crowd behavior has been of great interest in the field of Artificial Intelligenc
 Crowd manipulation is the intentional use of techniques to control or influence the behavior of a crowd such that they take upon a desired action. In the Crowd Manipulation Game (CMG) the player is equipped with artifacts and special abilities which allows him to manipulate the crowd such that he is able to achieve a desired goal. The game is somewhat inspired by the upcoming game Watchdogs\cite{watchdogs}, where the player can manipulate the environment by hacking devices such as cell phones and stoplights. In CMG the player will be able to `hack' ATM machines, making them spit out money in the environment, and civilians will be eager to pick this money up.
 
 % TODO explain pygame
-The game is made using the open source Pygame toolkit\footnote{\url{http://www.pygame.org}}: a set of Python modules designed for writing games. Pygame allows for functions that are typically used in the making of games, such as support for sprites, collision, rendering and the likes. 
+The game is made using the open source Pygame toolkit\footnote{\url{http://www.pygame.org}}: a set of Python modules designed for writing games. Pygame allows the use of functions that are typically used in the making of games, such as support for sprites, collision, rendering and the likes. 
 
 Section \ref{sec:Design} will discuss the graphical design of the CMG and section \ref{sec:Rendering} will discuss how all the visuals are rendered. In section \ref{sec:Collision Detection} our collision detection is detailed. Section \ref{sec:Path Planning} discusses two approaches to path planning and section \ref{sec:Steering Behavior} explains two approaches to steering behavior. Section \ref{sec:Gameplay} gives an overview of the current state of the game and sections \ref{sec:Discussion} and \ref{sec:Future Work} discuss possible adjustments and extensions. Finally, section \ref{sec:Conclusion} concludes our work.
 
@@ -67,17 +67,22 @@ The main loop dispatches a slice of computation time to each object, so that it 
 \label{sec:Rendering}
 
 \begin{figure}
-\centering
-\includegraphics{../img/player.png}
-\caption{Player sprites.}
-\label{fig:player}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../img/ground_test.png}
-\caption{Player sprites.}
-\label{fig:walls}
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics{../img/player.png}
+                \caption{Player sprites.}
+                \label{fig:player}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics{../img/ground_test.png}
+                \caption{Wall tileset.}
+                \label{fig:walls}
+        \end{subfigure}
+        \caption{Some sprites}\label{fig:sprites}
 \end{figure}
 
 In simple top-down games you can draw almost in arbitrary order. However, because we use a bird-view perspective, care has to be taken when drawing things. Some objects obscure other objects and therefore have to be drawn after the object they are obstructing. Our renderer takes care of this. It sorts all objects based on their depth and draws them in the correct order.
@@ -133,10 +138,10 @@ The pathfinding plans a path around the static walls in the level. There are how
 \subsection{Boids approach}
 The first thing we tried was to implement a similar system to the Boids that were discussed in \citep{reynolds1987flocks}. The individuals were able to keep their distance, but it looked rather unnatural. Another problem with this approach was that sometimes one individual would push another away from its goal, while that other individual was pushing him. Thus both never reached their goals.
 
-Because this didn't work out as we planned we tried another approach.
+Because this did not work out as we planned we tried another approach.
 
 \subsection{Scanline approach}
-The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right. Based on which lines trigger, the heading direction is altered.
+The scanline approach employs raycasting to guide steering. Basically each person shoots three rays: 1 straight ahead, 1 tilted to the left and 1 tilted to the right, forming a cone in front of the agent. Based on which lines are triggered, the heading direction is altered, such that the detected entity is being avoided, while still heading towards the destination. When an entity is touched by one of the lines, the turning angle increases incrementally to a certain amount. When the entity is no longer in the cone of the agent, the turning angle gradually decreases until it is back to no turning at all. This will make agents make a curve around other agents, mimicking human steering behavior.
 
 \section{Gameplay}
 \label{sec:Gameplay}
@@ -201,6 +206,7 @@ Figure \ref{fig:gameplay} shows some typical gameplay. A bus appears on the left
 
 \section{Future Work}
 \label{sec:Future Work}
+In future work we plan to add more abilities, more types of npcs and of course more levels and level elements. Abilities would be made more advanced than they are currently, such as items that attract civilians from a certain distance, or items that will only cause certain types of npcs to be attracted, such as a donut for the police. A an item that repels people can also be a fun game mechanic, such as a stink-bomb or explosions that will make the people run in the opposite direction. Currently the CMG has four types of characters, which we could expand upon. More types of civilians can be added for more variety, such as children, elderly which each will move at different speeds. Furthermore, because we have the level editor, we are able to create more levels relatively easily, however level elements are also needed to create versatile gameplay. For example stoplights which can be 'hacked' to create a traffic accident, or commercial screens that can be hacked to the advantage of the player, and other electronic devices such as cellphones, gates, fire alarms.
 
 \section{Conclusion}
 \label{sec:Conclusion}
