@@ -60,19 +60,23 @@ Section \ref{sec:Design} will discuss the graphical design of the CMG and sectio
 \label{sec:Rendering}
 
 \begin{figure}
-\centering
-\includegraphics{../img/player.png}
-\caption{Player sprites.}
-\label{fig:player}
+        \centering
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics{../img/player.png}
+                \caption{Player sprites.}
+                \label{fig:player}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.4\textwidth}
+                \centering
+                \includegraphics{../img/ground_test.png}
+                \caption{Wall tileset.}
+                \label{fig:walls}
+        \end{subfigure}
+        \caption{Some sprites}\label{fig:sprites}
 \end{figure}
-
-\begin{figure}
-\centering
-\includegraphics{../img/ground_test.png}
-\caption{Player sprites.}
-\label{fig:walls}
-\end{figure}
-
 
 The first thing that had to be done, was the ability to show things on the screen. To this end, we implemented our own renderer.
 
