@@ -44,7 +44,7 @@
 Crowd behavior has been of great interest in the field of Artificial Intelligence and the simulation of large amounts of people. Every individual in a group of people has to take  many decisions when navigating through the crowd. People would rather not bump into each other, and will try to leave some space between one another. As each person will have a certain place to be, they will not stand still to avoid bumping into each other but instead will try to steer around each other. This requires estimating when and how much to turn, what speed to move at, and calculating an optimal path to the current destination. In crowd simulation these decisions and estimations have to be made for each individual agent.
 %http://www.youtube.com/watch?v=eGYIEvEe7Ks
 
-Crowd manipulation is the intentional use of techniques to control or influence the behavior of a crowd such that they take upon a desired action. In the Crowd Manipulation Game (CMG) the player is equipped with artifacts and special abilities which allows him to manipulate the crowd such that he is able to achieve its goal. The game is somewhat inspired by the upcoming game Watchdogs\ref{watchdogs?}, where the player can manipulate the environment by hacking devices such as cell phones and stoplights. In CMG the player will be able to 'hack' ATM machines, making them spit out money in the environment, and civilians will be eager to pick this money up.
+Crowd manipulation is the intentional use of techniques to control or influence the behavior of a crowd such that they take upon a desired action. In the Crowd Manipulation Game (CMG) the player is equipped with artifacts and special abilities which allows him to manipulate the crowd such that he is able to achieve a desired goal. The game is somewhat inspired by the upcoming game Watchdogs\cite{watchdogs}, where the player can manipulate the environment by hacking devices such as cell phones and stoplights. In CMG the player will be able to `hack' ATM machines, making them spit out money in the environment, and civilians will be eager to pick this money up.
 
 % TODO explain pygame
 The game is made using the open source Pygame toolkit\footnote{\url{http://www.pygame.org}}: a set of Python modules designed for writing games. Pygame allows for functions that are typically used in the making of games, such as support for sprites, collision, rendering and the likes. 
@@ -72,7 +72,7 @@ Section \ref{sec:Design} will discuss the graphical design of the CMG and sectio
 \label{sec:Collision Detection}
 As soon as the rendering worked, we started on the collision detection. As you don't want your player to be able to walk through walls. Each sprite has a rectangle that represents the boundaries of the object. A collision is detected by determining whether there is an overlap between two rectangles. The overlap between two rectangles is calculated by pygame's collidesrect(). In some cases it is desirable to inflate the rectangle to detect a collision before the objects actually collide,
 
-An object is able to move in a direction if it does not result in a collision. If the object moves both horizontally and vertically, then the object is only moved in the direction that does not cause a collision. For example, an object that wants to move both upwards and to the right will only move upwards if there is a collision when moving to the right. This way an object can glide over a wall without the player explicitly having to hold only the valid keys. 
+An object is able to move in a direction if it does not result in a collision. If the object moves both horizontally and vertically, then the object is only moved in the direction that does not cause a collision. For example, an object that wants to move both upwards and to the right will only move upwards if there is a collision when moving to the right and no collision when moving upwards. This way an object can glide over a wall without the player explicitly having to hold only the valid keys. 
 
 At first every collision was treated in a similar fashion. All objects in the game inherited from a superclass named GameObject, thus making collision detection easy because of polymorphism. However, because there were quite a couple of walls, it also made collision detection a tad slow. Therefore we implemented another system that is quite straightforward: whenever walls lie next to each other merge them to create a bigger rectangle, on which the collisions are tested.
 
@@ -85,7 +85,7 @@ Thus there are 2 collision systems:
 \section{Path Planning}
 \label{sec:Path Planning}
 
-After we created collision detection, we wanted to implement NPCs, non-playable characters. At first these character just walked in a straight line. As this is not very smart and does not get you anywhere, more advanced pathplanning had to be implemented. 
+After we created collision detection, we wanted to implement NPCs, non-playable characters. At first these characters just walked in a straight line. As this is not very smart and does not get you anywhere, more advanced pathplanning had to be implemented. 
 
 \subsection{Grid-based approach}
 One of the simplest solutions was to work with the grid we already got for the collisions. Every point in this grid was connected to its direct neighbors in a graph. Now we could simply use A* to plan a path in this graph. 
